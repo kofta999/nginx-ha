@@ -2,4 +2,5 @@
 - name: Run workload
   community.docker.docker_compose_v2:
     state: present
+    build: always
     project_src: /vagrant/services

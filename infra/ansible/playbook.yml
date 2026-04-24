@@ -1,11 +1,11 @@
+# - name: Backend workload config
+#   hosts: backend
+#   become: true
+#   roles:
+#     - name: backend
+
 - name: Nginx hosts config
   hosts: nginx
   become: true
   roles:
     - name: nginx
-
-- name: Backend workload config
-  hosts: backend
-  become: true
-  roles:
-    - name: backend

@@ -1,3 +1,41 @@
 - name: Install nginx
   ansible.builtin.apt:
     name: "nginx"
+
+- name: Enable and run nginx
+  ansible.builtin.service:
+    name: nginx
+    state: started
+
+- name: Create SSL dir
+  ansible.builtin.file:
+    path: /etc/nginx/ssl
+    state: directory
+
+- name: Generate an OpenSSL private key
+  community.crypto.openssl_privatekey:
+    path: /etc/nginx/ssl/key.pem
+    size: 4096
+    type: RSA
+
+- name: Generate an OpenSSL Certificate Signing Request (CSR)
+  community.crypto.openssl_csr:
+    path: /etc/nginx/ssl/cert.csr
+    privatekey_path: /etc/nginx/ssl/key.pem
+    common_name: localhost
+
+- name: Generate a Self Signed OpenSSL certificate
+  community.crypto.x509_certificate:
+    path: /etc/nginx/ssl/cert.pem
+    privatekey_path: /etc/nginx/ssl/key.pem
+    csr_path: /etc/nginx/ssl/cert.csr
+    provider: selfsigned
+    selfsigned_not_after: "+3650d" # Valid for 10 years
+    mode: 0644
+
+- name: Copy config file
+  ansible.builtin.copy:
+    src: files/nginx.conf
+    dest: /etc/nginx/nginx.conf
+    validate: "nginx -t -c %s"
+  notify: Reload nginx
