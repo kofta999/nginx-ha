@@ -3,6 +3,12 @@
 
 Vagrant.configure("2") do |config|
   config.vm.box = "cloud-image/ubuntu-24.04"
+  config.vm.synced_folder "services", "/vagrant/services"
+
+  # Host Manager Plugin
+  config.hostmanager.enabled = true
+  config.hostmanager.manage_guest = true
+  config.hostmanager.manage_host = true
 
   # Private network subnet:
   # Reserved for future use: 192.168.56.15
