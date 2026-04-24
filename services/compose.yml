@@ -1,0 +1,11 @@
+name: Backend Services
+services:
+  products:
+    build:
+      context: ./products
+    network_mode: host
+
+  auth:
+    build:
+      context: ./auth
+    network_mode: host
