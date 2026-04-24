@@ -7,7 +7,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "change-me-in-production";
 const JWT_ISSUER = "auth-service";
 const JWT_AUDIENCE = "nginx-ha-clients";
 
-app.get("/", (c) => {
+app.get("/info", (c) => {
   return c.json({
     service: "auth",
     ok: true,

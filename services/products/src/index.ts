@@ -24,7 +24,7 @@ const randomPrice = (base: number) => {
   return Number(next.toFixed(2));
 };
 
-app.get("/", (c) => {
+app.get("/info", (c) => {
   return c.json({
     service: "products",
     ok: true,
@@ -40,17 +40,17 @@ app.get("/", (c) => {
 app.get("/health", (c) => c.json({ ok: true }));
 
 // REST: list
-app.get("/products", (c) => c.json(products));
+app.get("/", (c) => c.json(products));
 
 // REST: get by id
-app.get("/products/:id", (c) => {
+app.get("/:id", (c) => {
   const product = findProduct(c.req.param("id"));
   if (!product) return c.json({ error: "Product not found" }, 404);
   return c.json(product);
 });
 
 // REST: create
-app.post("/products", async (c) => {
+app.post("/", async (c) => {
   const body = await c.req.json().catch(() => null);
   if (!body?.name || typeof body?.price !== "number") {
     return c.json(
