@@ -1,0 +1,6 @@
+- name: Install Docker and Docker Compose
+  include_tasks: docker.yml
+
+
+- name: Run Backend workloads
+  include_tasks: workload.yml

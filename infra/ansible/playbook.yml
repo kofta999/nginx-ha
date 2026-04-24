@@ -3,3 +3,9 @@
   become: true
   roles:
     - name: nginx
+
+- name: Backend workload config
+  hosts: backend
+  become: true
+  roles:
+    - name: backend

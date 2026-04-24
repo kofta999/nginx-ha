@@ -1,0 +1,5 @@
+# TODO: Assuming services are at /vagrant/services
+- name: Run workload
+  community.docker.docker_compose_v2:
+    state: present
+    project_src: /vagrant/services
