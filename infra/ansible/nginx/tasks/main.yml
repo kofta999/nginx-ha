@@ -11,6 +11,10 @@
   ansible.builtin.file:
     path: /etc/nginx/ssl
     state: directory
+    owner: root
+    group: root
+    mode: "0644"
+
 
 - name: Generate an OpenSSL private key
   community.crypto.openssl_privatekey:
@@ -31,11 +35,28 @@
     csr_path: /etc/nginx/ssl/cert.csr
     provider: selfsigned
     selfsigned_not_after: "+3650d" # Valid for 10 years
-    mode: 0644
+    mode: "0644"
 
-- name: Copy config file
+- name: Ensure conf.d exists
+  ansible.builtin.file:
+    path: /etc/nginx/conf.d
+    state: directory
+    mode: '0755'
+
+- name: Copy sub-configs
+  ansible.builtin.copy:
+    src: files/conf.d/
+    dest: /etc/nginx/conf.d/
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Copy main nginx.conf and validate the WHOLE setup
   ansible.builtin.copy:
     src: files/nginx.conf
     dest: /etc/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: "0644"
     validate: "nginx -t -c %s"
   notify: Reload nginx
