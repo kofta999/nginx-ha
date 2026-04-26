@@ -1,5 +1,11 @@
+global_defs {
+    enable_script_security
+    script_user keepalived_script
+}
+
 vrrp_script check_nginx {
     script "/usr/local/bin/check_nginx.sh"
+    user keepalived_script
     interval 2
     weight -20
     fall 2
@@ -8,7 +14,7 @@ vrrp_script check_nginx {
 
 vrrp_instance VI_1 {
     state {{ vrrp_role }}
-    interface {{ ansible_default_ipv4.interface }}
+    interface {{ keepalived_interface }}
     virtual_router_id {{ virtual_router_id }}
     priority {{ vrrp_priority }}
     advert_int {{ advertise_interval_secs }}
