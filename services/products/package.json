@@ -6,7 +6,8 @@
     "start": "bun run dist/index.js"
   },
   "dependencies": {
-    "hono": "^4.12.15"
+    "hono": "^4.12.15",
+    "prom-client": "^15.1.3"
   },
   "devDependencies": {
     "@types/bun": "latest"

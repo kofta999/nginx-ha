@@ -1,0 +1,16 @@
+[Unit]
+Description=NGINX Prometheus Exporter
+After=network-online.target nginx.service
+Wants=network-online.target
+Requires=nginx.service
+
+[Service]
+Type=simple
+User=root
+Group=root
+ExecStart=/usr/local/bin/nginx-node-exporter --nginx.scrape-uri=http://127.0.0.1:8080/stub_status
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

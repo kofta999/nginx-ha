@@ -15,6 +15,7 @@ Vagrant.configure("2") do |config|
   backend_ip = "192.168.56.11"
   nginx1_ip  = "192.168.56.12"
   nginx2_ip  = "192.168.56.13"
+  monitoring_ip = "192.168.56.14"
 
   config.vm.define "backend" do |backend|
     backend.vm.hostname = "backend"
@@ -36,6 +37,14 @@ Vagrant.configure("2") do |config|
     nginx2.vm.hostname = "nginx2"
     nginx2.vm.network "private_network", ip: nginx2_ip
     nginx2.vm.provider "virtualbox" do |vb|
+      vb.memory = 1024
+    end
+  end
+
+  config.vm.define "monitoring" do |monitoring|
+    monitoring.vm.hostname = "monitoring"
+    monitoring.vm.network "private_network", ip: monitoring_ip
+    monitoring.vm.provider "virtualbox" do |vb|
       vb.memory = 1024
     end
   end

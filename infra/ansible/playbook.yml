@@ -1,3 +1,11 @@
+- name: Common config
+  hosts: all
+  become: true
+  tags:
+    - common
+  roles:
+    - common
+
 - name: Backend workload config
   hosts: backend
   become: true
