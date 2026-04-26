@@ -29,3 +29,11 @@
     - keepalived
   roles:
     - keepalived
+
+- name: Monitoring host config
+  hosts: monitoring
+  become: true
+  tags:
+    - monitoring
+  roles:
+    - monitoring

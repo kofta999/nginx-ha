@@ -1,0 +1,39 @@
+# - name: Setup Prometheus
+#   ansible.builtin.import_role:
+#     name: prometheus.prometheus.prometheus
+#   vars:
+#     prometheus_global:
+#       scrape_interval: 15s
+
+#     prometheus_scrape_configs:
+#       - job_name: "node"
+#         static_configs:
+#           - targets: "{{ groups['all'] | map('extract', hostvars, ['ansible_host']) | map('regex_replace', '$', ':9100') | list }}"
+
+#       - job_name: "nginx"
+#         static_configs:
+#           - targets: "{{ groups['nginx'] | map('extract', hostvars, ['ansible_host']) | map('regex_replace', '$', ':9113') | list }}"
+
+#       - job_name: "auth_service"
+#         static_configs:
+#           - targets:
+#               - "{{ hostvars['backend']['ansible_host'] }}:3000"
+
+#       - job_name: "products_service"
+#         static_configs:
+#           - targets:
+#               - "{{ hostvars['backend']['ansible_host'] }}:4000"
+
+- name: Setup Grafana
+  ansible.builtin.import_role:
+    name: grafana.grafana.grafana
+  vars:
+    grafana_ini:
+      security:
+        admin_password: "{{ grafana_admin_password }}"
+    grafana_datasources:
+          - name: Prometheus
+            type: prometheus
+            url: http://localhost:9090
+            access: proxy
+            is_default: true
