@@ -1,0 +1,4 @@
+keepalived_vip: 192.168.56.15
+keepalived_auth_pass: 1234
+virtual_router_id: 67
+advertise_interval_secs: 3

@@ -1,0 +1,25 @@
+- name: Install keepalived
+  ansible.builtin.apt:
+    name:
+      - keepalived
+    state: present
+
+- name: Enable keepalived service
+  ansible.builtin.service:
+    name: keepalived
+    state: started
+
+- name: Copy health check script
+  ansible.builtin.copy:
+    src: files/check_nginx.sh
+    dest: /usr/local/bin/check_nginx.sh
+    mode: "0754"
+    owner: root
+    group: root
+
+- name: Copy keepalived configuration
+  ansible.builtin.template:
+    src: templates/keepalived.conf.j2
+    dest: /etc/keepalived/keepalived.conf
+    mode: "0644"
+  notify: Restart keepalived
