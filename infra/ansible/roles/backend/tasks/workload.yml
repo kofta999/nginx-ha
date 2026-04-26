@@ -1,6 +1,10 @@
-# TODO: Assuming services are at /vagrant/services
+- name: Copy workload files
+  ansible.builtin.synchronize:
+    src: "{{ workload_path }}"
+    dest: /opt
+
 - name: Run workload
   community.docker.docker_compose_v2:
     state: present
     build: always
-    project_src: /vagrant/services
+    project_src: /opt/services
