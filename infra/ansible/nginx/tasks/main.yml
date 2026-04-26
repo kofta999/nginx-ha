@@ -6,6 +6,7 @@
   ansible.builtin.service:
     name: nginx
     state: started
+    enabled: true
 
 - name: Create SSL dir
   ansible.builtin.file:
@@ -14,7 +15,6 @@
     owner: root
     group: root
     mode: "0644"
-
 
 - name: Generate an OpenSSL private key
   community.crypto.openssl_privatekey:
@@ -51,7 +51,7 @@
     group: root
     mode: "0644"
 
-- name: Copy main nginx.conf and validate the WHOLE setup
+- name: Copy main nginx.conf and validate the whole setup
   ansible.builtin.copy:
     src: files/nginx.conf
     dest: /etc/nginx/nginx.conf

@@ -1,17 +1,23 @@
 - name: Backend workload config
   hosts: backend
   become: true
+  tags:
+    - backend
   roles:
     - backend
 
 - name: Nginx hosts config
   hosts: nginx
   become: true
+  tags:
+    - nginx
   roles:
     - nginx
 
 - name: Keepalived hosts config
   hosts: keepalived
   become: true
+  tags:
+    - keepalived
   roles:
     - keepalived
