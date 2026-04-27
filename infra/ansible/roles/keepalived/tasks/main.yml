@@ -1,3 +1,7 @@
+- name: Include vault vars
+  ansible.builtin.include_vars:
+    file: vars/vault.yml
+
 - name: Install keepalived
   ansible.builtin.apt:
     name:
@@ -17,7 +21,6 @@
     mode: "0550"
     owner: keepalived_script
     group: keepalived_script
-
 
 - name: Enable keepalived service
   ansible.builtin.service:

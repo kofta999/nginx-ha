@@ -1,3 +1,7 @@
+- name: Include vault vars
+  ansible.builtin.include_vars:
+    file: vars/vault.yml
+
 # - name: Setup Prometheus
 #   ansible.builtin.import_role:
 #     name: prometheus.prometheus.prometheus
