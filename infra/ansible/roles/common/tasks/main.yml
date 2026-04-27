@@ -1,3 +1,4 @@
+# Note: node_exporter_textfile_dir is at /var/lib/node_exporter by default, which is fine in our case
 - name: Install and configure node_exporter
   ansible.builtin.include_role:
     name: prometheus.prometheus.node_exporter

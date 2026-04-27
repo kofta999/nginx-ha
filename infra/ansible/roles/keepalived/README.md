@@ -1,38 +1,99 @@
-Role Name
-=========
+# keepalived role
 
-A brief description of the role goes here.
+Configures HA failover for the two NGINX nodes using VRRP via `keepalived`, with an NGINX health-check script that affects priority.
 
-Requirements
-------------
+## What this role does
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+- Installs `keepalived`
+- Creates a dedicated system user: `keepalived_script`
+- Deploys health-check script to:
+  - `/usr/local/bin/check_nginx.sh`
+- Ensures `keepalived` service is enabled and running
+- Renders and installs config from template:
+  - `templates/keepalived.conf.j2` -> `/etc/keepalived/keepalived.conf`
+- Restarts `keepalived` when config changes (handler)
 
-Role Variables
---------------
+## Files in this role
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+- `tasks/main.yml`
+- `handlers/main.yml`
+- `templates/keepalived.conf.j2`
+- `files/check_nginx.sh`
 
-Dependencies
-------------
+## Required variables
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+These variables are used by `templates/keepalived.conf.j2` and must be available in inventory/group vars/host vars:
 
-Example Playbook
-----------------
+- `vrrp_role`  
+  Expected values: `MASTER` or `BACKUP`
+- `keepalived_interface`  
+  Network interface used for VRRP advertisements (example: `eth1`)
+- `virtual_router_id`  
+  Integer VRID shared by nodes in same VRRP instance
+- `vrrp_priority`  
+  Higher value wins MASTER election
+- `advertise_interval_secs`  
+  VRRP advert interval in seconds
+- `keepalived_auth_pass`  
+  VRRP auth password
+- `keepalived_vip`  
+  Virtual IP in CIDR-like format expected by keepalived (example: `192.168.56.15/24`)
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+## Inventory pattern used in this project
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+In this project, the role is applied to the `keepalived` host group, and per-node role/priority are set in inventory:
 
-License
--------
+- `master` host with `vrrp_role=MASTER`, higher `vrrp_priority`
+- `backup` host with `vrrp_role=BACKUP`, lower `vrrp_priority`
 
-BSD
+Example shape (illustrative):
 
-Author Information
-------------------
+- node A: `MASTER`, priority `101`
+- node B: `BACKUP`, priority `100`
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+## Health-check behavior
+
+The template config defines:
+
+- `global_defs` with script security enabled
+- `vrrp_script check_nginx` calling `/usr/local/bin/check_nginx.sh`
+- `track_script check_nginx` under `vrrp_instance`
+
+If NGINX health check fails repeatedly, VRRP weight is reduced (as defined in template), allowing failover to the backup node.
+
+## Handler
+
+- `Restart keepalived`  
+  Triggered when `/etc/keepalived/keepalived.conf` changes.
+
+## Example play usage
+
+This role is already wired in `site.yml` as:
+
+- play name: **Keepalived hosts config**
+- hosts: `keepalived`
+- become: `true`
+- roles:
+  - `keepalived`
+
+## Run commands
+
+From `infra/ansible`:
+
+- Run only this role (via tag):
+  `ansible-playbook -i inventory.ini site.yml --tags keepalived`
+- Run against keepalived hosts limit:
+  `ansible-playbook -i inventory.ini site.yml --limit keepalived`
+
+## Validation tips
+
+After applying role on a node:
+
+- Service status:
+  `systemctl status keepalived`
+- Effective config:
+  `cat /etc/keepalived/keepalived.conf`
+- VIP presence:
+  `ip a | grep -F "<your_vip_without_mask>"`
+- Logs:
+  `journalctl -u keepalived -n 100 --no-pager`

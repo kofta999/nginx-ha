@@ -1,38 +1,81 @@
-Role Name
-=========
+# Backend Role
 
-A brief description of the role goes here.
+This role prepares the backend host to run containerized application workloads from the local `services/` directory.
 
-Requirements
-------------
+## What this role does
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+The role runs two task files in order:
 
-Role Variables
---------------
+1. `tasks/docker.yml`
+   - Installs required system packages
+   - Adds Docker apt GPG key
+   - Adds Docker apt repository
+   - Installs:
+     - `docker-ce`
+     - `docker-compose`
+     - `python3-docker`
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+2. `tasks/workload.yml`
+   - Copies workload files from controller to remote host using `ansible.posix.synchronize`
+   - Starts the compose project with `community.docker.docker_compose_v2`
+   - Forces image rebuild with `build: always`
 
-Dependencies
-------------
+## Variables
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+### Required
 
-Example Playbook
-----------------
+- `workload_path`  
+  Source path on the Ansible controller to sync to `/opt` on the backend host.
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+### Used by modules/runtime
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+- Docker daemon available on target host (installed by this role)
+- `rsync` available for synchronize workflow (required by `ansible.posix.synchronize`)
 
-License
--------
+## Resulting state on target
 
-BSD
+- Workload files are present under `/opt` (for example `/opt/services`)
+- Docker Compose project in `/opt/services` is brought to `present` state
+- Images are rebuilt during deployment (`build: always`)
 
-Author Information
-------------------
+## Files and structure
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+- `tasks/main.yml`  
+  Includes `docker.yml` and `workload.yml`
+- `tasks/docker.yml`  
+  Docker engine + compose installation
+- `tasks/workload.yml`  
+  Workload sync and compose deployment
+- `handlers/main.yml`  
+  Currently empty (no handlers defined)
+
+## Example usage
+
+```yaml
+- name: Backend workload config
+  hosts: backend
+  become: true
+  vars:
+    workload_path: "{{ playbook_dir }}/../../services"
+  roles:
+    - backend
+```
+
+## Run examples
+
+Run only this role via the playbook tag:
+
+```bash
+ansible-playbook -i inventory.ini site.yml --tags backend
+```
+
+Or run the full site:
+
+```bash
+ansible-playbook -i inventory.ini site.yml
+```
+
+## Notes
+
+- The Docker repository in this role is pinned to Ubuntu `focal` in `tasks/docker.yml`.
+- `community.docker.docker_compose_v2` uses `project_src: /opt/services`, so your synced directory is expected to contain `compose.yml` at that path.

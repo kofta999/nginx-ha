@@ -1,38 +1,74 @@
-Role Name
-=========
+# common role
 
-A brief description of the role goes here.
+Installs baseline host monitoring by configuring Node Exporter on all hosts.
 
-Requirements
-------------
+## What this role does
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+This role currently performs one task:
 
-Role Variables
---------------
+- Includes the community role `prometheus.prometheus.node_exporter` to install and configure Node Exporter.
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+That gives each host a Prometheus metrics endpoint (typically on port `9100`) for system-level metrics like CPU, memory, filesystem, and network.
 
-Dependencies
-------------
+## Where it is used
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+In `site.yml`, this role is applied to:
 
-Example Playbook
-----------------
+- `hosts: all`
+- `become: true`
+- `tags: [common]`
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+So every VM in your inventory gets Node Exporter.
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+## Requirements
 
-License
--------
+- Ansible collections/roles available in your environment:
+  - `prometheus.prometheus` (for `node_exporter` role)
+- Target hosts must be reachable via SSH and allow privilege escalation (`become: true`).
 
-BSD
+## Variables
 
-Author Information
-------------------
+This role does not define project-specific defaults in `defaults/main.yml`.
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+You can still tune Node Exporter behavior by passing variables supported by `prometheus.prometheus.node_exporter` (for example listen address, enabled collectors, extra flags) via inventory/group vars/host vars.
+
+## Handlers
+
+No handlers are defined by this role.
+
+## Dependencies
+
+- `prometheus.prometheus.node_exporter` (included from `tasks/main.yml`)
+
+## Example usage
+
+```yaml
+- name: Common config
+  hosts: all
+  become: true
+  roles:
+    - common
+```
+
+## Run only this role
+
+From `infra/ansible`:
+
+```bash
+ansible-playbook -i inventory.ini site.yml --tags common
+```
+
+## Verification
+
+After running, verify Node Exporter is up on a target host:
+
+```bash
+systemctl status node_exporter
+curl -s http://127.0.0.1:9100/metrics | head
+```
+
+Or from another host with network access:
+
+```bash
+curl -s http://<target-host-ip>:9100/metrics | head
+```
