@@ -77,5 +77,4 @@ ansible-playbook -i inventory.ini site.yml
 
 ## Notes
 
-- The Docker repository in this role is pinned to Ubuntu `focal` in `tasks/docker.yml`.
 - `community.docker.docker_compose_v2` uses `project_src: /opt/services`, so your synced directory is expected to contain `compose.yml` at that path.
