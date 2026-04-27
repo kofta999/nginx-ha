@@ -3,7 +3,6 @@
 
 Vagrant.configure("2") do |config|
   config.vm.box = "cloud-image/ubuntu-24.04"
-  config.vm.synced_folder "services", "/vagrant/services"
 
   # Host Manager Plugin
   config.hostmanager.enabled = true

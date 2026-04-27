@@ -18,6 +18,14 @@
     group: root
     mode: "0644"
 
+- name: Copy upstream.conf template
+  ansible.builtin.template:
+    src: templates/conf.d/upstream.conf
+    dest: /etc/nginx/conf.d/upstream.conf
+    owner: root
+    group: root
+    mode: "0644"
+
 - name: Copy main nginx.conf and validate the whole setup
   ansible.builtin.copy:
     src: files/nginx.conf

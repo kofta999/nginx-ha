@@ -1,3 +1,5 @@
 .vagrant
 node_modules
 .vault_pass
+.terraform
+inventory_aws_ssh.ini
