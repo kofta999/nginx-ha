@@ -8,89 +8,14 @@
     state: started
     enabled: true
 
-- name: Create SSL dir
-  ansible.builtin.file:
-    path: /etc/nginx/ssl
-    state: directory
-    owner: root
-    group: root
-    mode: "0644"
+- name: TLS configuration
+  ansible.builtin.import_tasks:
+    file: tls.yml
 
-- name: Generate an OpenSSL private key
-  community.crypto.openssl_privatekey:
-    path: /etc/nginx/ssl/key.pem
-    size: 4096
-    type: RSA
+- name: Copy configuration
+  ansible.builtin.import_tasks:
+    file: config.yml
 
-- name: Generate an OpenSSL Certificate Signing Request (CSR)
-  community.crypto.openssl_csr:
-    path: /etc/nginx/ssl/cert.csr
-    privatekey_path: /etc/nginx/ssl/key.pem
-    common_name: localhost
-
-- name: Generate a Self Signed OpenSSL certificate
-  community.crypto.x509_certificate:
-    path: /etc/nginx/ssl/cert.pem
-    privatekey_path: /etc/nginx/ssl/key.pem
-    csr_path: /etc/nginx/ssl/cert.csr
-    provider: selfsigned
-    selfsigned_not_after: "+3650d" # Valid for 10 years
-    mode: "0644"
-
-- name: Ensure conf.d exists
-  ansible.builtin.file:
-    path: /etc/nginx/conf.d
-    state: directory
-    mode: '0755'
-
-- name: Copy sub-configs
-  ansible.builtin.copy:
-    src: files/conf.d/
-    dest: /etc/nginx/conf.d/
-    owner: root
-    group: root
-    mode: "0644"
-
-- name: Copy main nginx.conf and validate the whole setup
-  ansible.builtin.copy:
-    src: files/nginx.conf
-    dest: /etc/nginx/nginx.conf
-    owner: root
-    group: root
-    mode: "0644"
-    validate: "nginx -t -c %s"
-  notify: Reload nginx
-
-- name: Download nginx-node-exporter
-  ansible.builtin.unarchive:
-    # TODO: Make it a variable with version
-    src: https://github.com/nginx/nginx-prometheus-exporter/releases/download/v1.5.1/nginx-prometheus-exporter_1.5.1_linux_amd64.tar.gz
-    dest: /tmp
-    remote_src: true
-
-- name: Install nginx-node-exporter binary
-  ansible.builtin.copy:
-    src: /tmp/nginx-prometheus-exporter
-    dest: /usr/local/bin/nginx-node-exporter
-    owner: root
-    group: root
-    mode: "0755"
-    remote_src: true
-
-- name: Create systemd unit for nginx-node-exporter
-  ansible.builtin.copy:
-    src: files/nginx-node-exporter.service
-    dest: /etc/systemd/system/nginx-node-exporter.service
-    owner: root
-    group: root
-    mode: "0644"
-
-- name: Reload systemd daemon
-  ansible.builtin.systemd:
-    daemon_reload: true
-
-- name: Enable and start nginx-node-exporter
-  ansible.builtin.systemd:
-    name: nginx-node-exporter
-    enabled: true
-    state: started
+- name: Install monitoring agents
+  ansible.builtin.import_tasks:
+    file: monitoring.yml

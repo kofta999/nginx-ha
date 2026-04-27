@@ -1,0 +1,48 @@
+- name: Download nginx-node-exporter
+  ansible.builtin.unarchive:
+    # TODO: Make it a variable with version
+    src: https://github.com/nginx/nginx-prometheus-exporter/releases/download/v1.5.1/nginx-prometheus-exporter_1.5.1_linux_amd64.tar.gz
+    dest: /tmp
+    remote_src: true
+
+- name: Install nginx-node-exporter binary
+  ansible.builtin.copy:
+    src: /tmp/nginx-prometheus-exporter
+    dest: /usr/local/bin/nginx-node-exporter
+    owner: root
+    group: root
+    mode: "0755"
+    remote_src: true
+
+- name: Create systemd unit for nginx-node-exporter
+  ansible.builtin.copy:
+    src: files/nginx-node-exporter.service
+    dest: /etc/systemd/system/nginx-node-exporter.service
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Enable and start nginx-node-exporter
+  ansible.builtin.systemd:
+    name: nginx-node-exporter
+    enabled: true
+    state: started
+
+- name: Copy cache counter script
+  ansible.builtin.copy:
+    src: files/cache-counter.sh
+    dest: /usr/local/bin/cache-counter.sh
+    owner: root
+    group: root
+    mode: "0550"
+
+- name: Create script cron job
+  ansible.builtin.cron:
+    name: cache_counter
+    state: present
+    job: "/usr/local/bin/cache-counter.sh; sleep 30; /usr/local/bin/cache-counter.sh"
+    minute: "*"

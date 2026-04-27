@@ -1,0 +1,29 @@
+- name: Ensure cache path exists
+  ansible.builtin.file:
+    path: /var/cache/nginx/products
+    state: directory
+    mode: '0755'
+
+- name: Ensure conf.d exists
+  ansible.builtin.file:
+    path: /etc/nginx/conf.d
+    state: directory
+    mode: '0755'
+
+- name: Copy sub-configs
+  ansible.builtin.copy:
+    src: files/conf.d/
+    dest: /etc/nginx/conf.d/
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Copy main nginx.conf and validate the whole setup
+  ansible.builtin.copy:
+    src: files/nginx.conf
+    dest: /etc/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: "0644"
+    validate: "nginx -t -c %s"
+  notify: Reload nginx
