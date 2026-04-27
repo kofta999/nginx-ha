@@ -22,6 +22,24 @@
     owner: keepalived_script
     group: keepalived_script
 
+- name: Install awscli
+  community.general.snap:
+    name:
+      - aws-cli
+    classic: true
+    state: present
+  when: env_type | default('local') == 'aws'
+
+
+- name: Copy AWS eip claim script
+  ansible.builtin.template:
+    src: templates/claim_eip.sh.j2
+    dest: /usr/local/bin/claim_eip.sh
+    mode: "0550"
+    owner: keepalived_script
+    group: keepalived_script
+  when: env_type | default('local') == 'aws'
+
 - name: Enable keepalived service
   ansible.builtin.service:
     name: keepalived
