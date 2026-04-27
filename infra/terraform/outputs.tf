@@ -13,15 +13,6 @@ output "bastion_public_ip" {
   ])
 }
 
-output "nginx_public_ips" {
-  description = "Public IPs of nginx instances (jump host candidates)"
-  value = {
-    for name, instance in aws_instance.infra :
-    name => instance.public_ip
-    if instance.tags.Role == "nginx"
-  }
-}
-
 output "instance_private_ips_by_role" {
   description = "Private IPs of instances grouped by role"
   value = {

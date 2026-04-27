@@ -1,6 +1,49 @@
 # nginx-ha
 
-A production-grade NGINX high-availability reverse proxy with sub-second failover, fully automated with Ansible, and observed with Prometheus and Grafana. Built as a DevOps portfolio project to demonstrate infrastructure automation, HA networking, NGINX internals, and observability.
+A production-grade NGINX high-availability reverse proxy with sub-second failover, automated with Ansible and Terraform, and observed with Prometheus and Grafana. Built as a DevOps portfolio project to demonstrate infrastructure automation, HA networking, NGINX internals, and observability.
+
+This project supports **two deployment modes**:
+
+- **Local lab**: Vagrant + VirtualBox
+- **AWS**: Terraform + EC2 + bastion jump host + generated Ansible inventory
+
+---
+
+## Deployment modes
+
+### 1) Local (Vagrant)
+
+- Uses static private network IPs (`192.168.56.0/24`).
+- Keepalived VIP: `192.168.56.15`.
+- Fastest path for iteration, offline development, and debugging.
+
+### 2) AWS (Terraform)
+
+- Creates EC2 instances in a VPC (private + public subnets).
+- Uses a **bastion** node as a stable, secure SSH jump host.
+- NGINX nodes are private by default; Keepalived failover uses an AWS API call to move a floating public Elastic IP (EIP) for service entry.
+- Inventory is generated dynamically from Terraform outputs (`infra/ansible/gen_inv.sh`).
+
+---
+
+## One-command deployment helper
+
+At the repo root, there is a master script to handle the end-to-end setup:
+
+`./deploy.sh`
+
+It will:
+
+1. Ask whether you want to deploy to **local** or **aws**.
+2. For **local**:
+   - Run `vagrant up`.
+   - Run Ansible with the static `infra/ansible/inventory.ini`.
+3. For **aws**:
+   - Prompt for the Terraform variable `ssh_key_name` (from `infra/terraform/variables.tf`).
+   - Prompt for your local PEM private key path.
+   - Run `terraform init && terraform apply`.
+   - Run `infra/ansible/gen_inv.sh` to build the dynamic inventory.
+   - Run the Ansible playbook with the newly generated `inventory_aws_ssh.ini`.
 
 ---
 
@@ -12,19 +55,19 @@ A production-grade NGINX high-availability reverse proxy with sub-second failove
 graph TB
     Client([Client / curl / k6])
 
-    subgraph VIP ["Virtual IP — 192.168.56.15 (Keepalived / VRRP)"]
+    subgraph VIP ["Virtual IP / Elastic IP (Keepalived)"]
         direction LR
-        N1["nginx1 — 192.168.56.12\nMASTER (priority 101)\nNGINX + Keepalived"]
-        N2["nginx2 — 192.168.56.13\nBACKUP (priority 100)\nNGINX + Keepalived"]
-        N1 <-->|"VRRP heartbeat\n(every 3s)"| N2
+        N1["nginx1\nMASTER (priority 101)\nNGINX + Keepalived"]
+        N2["nginx2\nBACKUP (priority 100)\nNGINX + Keepalived"]
+        N1 <-->|"VRRP Unicast heartbeat\n(every 3s)"| N2
     end
 
-    subgraph Backend ["backend — 192.168.56.11"]
+    subgraph Backend ["backend node"]
         AUTH["Auth service\n:3000"]
         PRODUCTS["Products service\n:4000"]
     end
 
-    subgraph Monitoring ["monitoring — 192.168.56.14"]
+    subgraph Monitoring ["monitoring node"]
         PROM[Prometheus]
         GRAF[Grafana]
         PROM --> GRAF
@@ -50,7 +93,7 @@ graph TB
 ```mermaid
 sequenceDiagram
     participant C as Client
-    participant VIP as VIP 192.168.56.15
+    participant VIP as VIP / EIP
     participant N1 as nginx1 (MASTER)
     participant N2 as nginx2 (BACKUP)
     participant KA1 as Keepalived nginx1
@@ -66,7 +109,7 @@ sequenceDiagram
     KA1->>KA1: priority 101 → 81 (weight -20)
     KA1->>KA2: VRRP advert with priority 81
     KA2->>KA2: 81 < 100, claim MASTER
-    KA2->>VIP: Gratuitous ARP — VIP now on nginx2
+    KA2->>VIP: Gratuitous ARP (Local) OR AWS API call (Cloud) — VIP now on nginx2
 
     Note over N1,N2: VIP transferred — sub-second gap
     C->>VIP: next HTTPS request
@@ -78,7 +121,7 @@ sequenceDiagram
     KA1->>KA1: priority restored to 101
     KA1->>KA2: VRRP advert with priority 101
     KA2->>KA2: 101 > 100, yield MASTER
-    KA2->>VIP: Gratuitous ARP — VIP back on nginx1
+    KA2->>VIP: Gratuitous ARP (Local) OR AWS API call (Cloud) — VIP back on nginx1
 ```
 
 ### NGINX request flow
@@ -130,7 +173,16 @@ graph LR
 
 ---
 
-## VM layout
+## AWS access model (important)
+
+- SSH administrative access should **always** go through the **bastion** host.
+- NGINX nodes should not be used as your permanent jump host.
+- The floating EIP can move between nginx nodes during failover, making it too fragile to tie admin SSH access to the active NGINX public IP.
+- `gen_inv.sh` inherently uses the bastion public IP as the jump host and leverages private IPs for configuring all internal nodes via `ProxyCommand`.
+
+---
+
+## VM layout (Local Environment Example)
 
 | VM         | IP            | Role                         | Key ports  |
 | ---------- | ------------- | ---------------------------- | ---------- |
@@ -138,15 +190,23 @@ graph LR
 | nginx1     | 192.168.56.12 | NGINX MASTER                 | 443, 9113  |
 | nginx2     | 192.168.56.13 | NGINX BACKUP                 | 443, 9113  |
 | monitoring | 192.168.56.14 | Prometheus + Grafana         | 9090, 3000 |
-| VIP        | 192.168.56.15 | Floats between nginx1/nginx2 | —          |
+| VIP / EIP  | 192.168.56.15 | Floats between nginx1/nginx2 | —          |
+
+_(Note: In AWS mode, a dedicated Bastion host is added, and IPs are assigned dynamically via DHCP within the VPC subnets)._
 
 ---
 
 ## Prerequisites
 
-- [Vagrant](https://www.vagrantup.com/) + VirtualBox
-- [Ansible](https://www.ansible.com/) >= 2.9
-- Python `requests` library on the Ansible controller (`pip install requests`)
+- **Local mode:**
+  - [Vagrant](https://www.vagrantup.com/) + VirtualBox
+  - [Ansible](https://www.ansible.com/) >= 2.9
+- **AWS mode:**
+  - [Terraform](https://www.terraform.io/)
+  - AWS CLI & credentials configured
+  - `jq` (required by `gen_inv.sh` to parse Terraform outputs)
+  - Existing EC2 key pair in AWS matching your local PEM file.
+- **Python dependencies** (Ansible controller): `requests` library (`pip install requests`).
 
 Install required Ansible collections:
 
@@ -158,37 +218,89 @@ ansible-galaxy collection install -r infra/ansible/requirements.yml
 
 ## Quick start
 
-```bash
-# Bring up all four VMs
-vagrant up
+### Local
 
-# Run the full playbook
+```bash
+vagrant up
 cd infra/ansible
 ansible-playbook -i inventory.ini site.yml
 ```
 
-Verify NGINX is serving through the VIP:
+Verify NGINX is serving through the local VIP:
 
 ```bash
-curl -sk https://192.168.56.15/health/
+curl -sk [https://192.168.56.15/health/](https://192.168.56.15/health/)
 # → {"ok":true}
 ```
 
-Open Grafana at `http://192.168.56.14:3000` (admin / see `monitoring/vars/main.yml`).
+### AWS
+
+```bash
+./deploy.sh
+# choose aws
+# provide ssh_key_name when asked (default: kofta)
+# provide local PEM file path
+```
+
+**Or manually on AWS:**
+
+```bash
+cd infra/terraform
+terraform init
+terraform apply -var="ssh_key_name=kofta"
+
+cd ../ansible
+SSH_KEY_FILE=/home/kofta/Downloads/kofta-eu1.pem ./gen_inv.sh
+ansible-playbook -i inventory_aws_ssh.ini site.yml
+```
+
+---
+
+## Terraform variable used in AWS flow
+
+Defined in `infra/terraform/variables.tf`:
+
+```hcl
+variable "ssh_key_name" {
+  description = "Existing AWS EC2 key pair name for SSH"
+  type        = string
+  default     = "kofta"
+}
+```
+
+---
+
+## Inventory generation (AWS)
+
+`infra/ansible/gen_inv.sh` reads Terraform outputs and builds `inventory_aws_ssh.ini` with:
+
+- `backend`, `nginx`, and `monitoring` hosts on private IPs.
+- Keepalived host vars (`vrrp_role`, `vrrp_priority`) injected from `instances_meta`.
+- `vip_allocation_id` mapped from Terraform output.
+- Bastion-based `ProxyCommand` logic applied to private hosts.
+
+Run manually:
+
+```bash
+cd infra/ansible
+SSH_KEY_FILE=/absolute/path/to/key.pem ./gen_inv.sh
+```
 
 ---
 
 ## Running individual roles
 
+You can target specific tags to avoid running the full playbook:
+
 ```bash
 # Only NGINX config
-ansible-playbook -i inventory.ini site.yml --tags nginx
+ansible-playbook -i <inventory_file> site.yml --tags nginx
 
 # Only Keepalived
-ansible-playbook -i inventory.ini site.yml --tags keepalived
+ansible-playbook -i <inventory_file> site.yml --tags keepalived
 
 # Only monitoring
-ansible-playbook -i inventory.ini site.yml --tags monitoring
+ansible-playbook -i <inventory_file> site.yml --tags monitoring
 ```
 
 ---
@@ -205,7 +317,7 @@ Enabled on the HTTPS listener. Requires TLS — HTTP/2 cleartext (h2c) is not co
 
 ### Upstream keepalive
 
-`keepalive 32` on each upstream block maintains up to 32 idle connections per worker to the backend. Without this, every proxied request pays a full TCP handshake to the backend. Requires `proxy_http_version 1.1` and `proxy_set_header Connection ""` in each location — HTTP/1.0 has no keepalive support and NGINX defaults to 1.0 for upstream traffic.
+`keepalive 32` on each upstream block maintains up to 32 idle connections per worker to the backend. Without this, every proxied request pays a full TCP handshake to the backend. Requires `proxy_http_version 1.1` and `proxy_set_header Connection ""` in each location.
 
 ### Timeouts
 
@@ -222,21 +334,19 @@ Enabled on the HTTPS listener. Requires TLS — HTTP/2 cleartext (h2c) is not co
 
 ### Rate limiting
 
-Two zones defined in shared memory: `auth` (5 req/s, burst 10) and `main` (10 req/s, burst 20). Stricter limits on auth since it's a credential endpoint. `nodelay` serves burst requests immediately rather than queuing them, avoiding artificial latency spikes. `limit_req_status 429` returns a proper Too Many Requests rather than the default 503.
-
-Rate limit state is per-node (in-memory). With VRRP, only one node holds the VIP at any time so both nodes never serve traffic simultaneously — this is a non-issue in this architecture. In an active-active setup, a shared Redis store (via OpenResty/lua-resty-redis) would be required.
+Two zones defined in shared memory: `auth` (5 req/s, burst 10) and `main` (10 req/s, burst 20). Stricter limits on auth since it's a credential endpoint. `nodelay` serves burst requests immediately rather than queuing them. `limit_req_status 429` returns a proper Too Many Requests rather than the default 503.
 
 ### Proxy cache
 
-Products API responses are cached on disk at `/var/cache/nginx/products`. Cache key is `$request_method$request_uri` so GET and POST to the same path are cached separately. Valid 200 responses are cached for 5 minutes. `proxy_cache_use_stale error timeout http_500 http_502 http_503` means NGINX serves the last known good response if the backend goes down — clients see slightly stale data rather than a 502. `proxy_cache_lock on` prevents cache stampede by serialising concurrent requests for the same uncached key. `proxy_cache_bypass $http_authorization` and `proxy_no_cache $http_authorization` skip cache for authenticated requests to prevent cross-user cache poisoning.
+Products API responses are cached on disk at `/var/cache/nginx/products`. Cache key is `$request_method$request_uri`. Valid 200 responses are cached for 5 minutes. `proxy_cache_use_stale error timeout http_500 http_502 http_503` means NGINX serves the last known good response if the backend goes down. `proxy_cache_lock on` prevents cache stampedes.
 
 ### WebSocket proxying
 
-Upgrade and Connection headers forwarded to backend. `proxy_read_timeout` set to 3600s on the WebSocket location only — idle WebSocket connections are normal and should not be killed by NGINX's default timeout.
+Upgrade and Connection headers forwarded to backend. `proxy_read_timeout` set to 3600s on the WebSocket location only.
 
-### health check endpoint
+### Health check endpoint
 
-`/health/` uses NGINX's `auth_request` module to fan out to both backend services — it first calls auth's `/health` as a subrequest, and only proxies to products' `/health` if auth returns 2xx. Limitation: if auth is down, the health endpoint returns a 500, which Keepalived's check script would interpret as NGINX failure. The health check script independently verifies NGINX is serving rather than relying solely on this endpoint.
+`/health/` uses NGINX's `auth_request` module to fan out to both backend services — it first calls auth's `/health` as a subrequest, and only proxies to products' `/health` if auth returns 2xx.
 
 ---
 
@@ -244,17 +354,15 @@ Upgrade and Connection headers forwarded to backend. `proxy_read_timeout` set to
 
 ### VRRP priority and weight
 
-nginx1 runs with base priority 101, nginx2 with 100. The `check_nginx.sh` script runs every 2 seconds. If it fails twice consecutively (`fall 2`), Keepalived reduces the effective priority by `weight -20`, dropping nginx1 to 81 — below nginx2's 100. nginx2 detects an advert with lower priority than itself and claims MASTER, sending a gratuitous ARP to move the VIP. The whole transition takes 4–9 seconds from process death to VIP handover (2 intervals × 2 falls + advert interval).
+nginx1 runs with base priority 101, nginx2 with 100. The `check_nginx.sh` script runs every 2 seconds. If it fails twice consecutively (`fall 2`), Keepalived reduces the effective priority by `weight -20`, dropping nginx1 to 81. nginx2 detects the lower priority advert, claims MASTER, and shifts the IP.
 
-When nginx1 recovers, two consecutive successes (`rise 2`) restore its priority to 101. Since 101 > 100, it preempts nginx2 and reclaims the VIP.
+### AWS Mode & Elastic IPs
+
+AWS blocks standard VRRP multicast. In AWS mode, Keepalived is configured strictly for **Unicast**. Furthermore, because AWS prevents arbitrary MAC/ARP spoofing, the failover process triggers a custom `claim_eip.sh` script via `notify_master` that uses the AWS EC2 API to instantly re-associate the public Elastic IP to the newly elected Master node.
 
 ### Health check script
 
-The script does two things: confirms the NGINX process is running with `pgrep`, then makes a real HTTP request to `https://localhost/health/` and checks for a 200 response. Process existence alone is not sufficient — NGINX can be running but stuck or misconfigured. The `-k` flag skips certificate verification since the cert is self-signed and the check is localhost-only.
-
-### Script security
-
-Keepalived runs health check scripts as a dedicated `keepalived_script` system user with `enable_script_security` in `global_defs`. Running scripts as root is a security violation flagged in Keepalived's logs.
+The script confirms the NGINX process is running with `pgrep`, then makes a real HTTP request to `https://localhost/health/` and checks for a 200 response. Keepalived runs these health check scripts as a dedicated `keepalived_script` system user with `enable_script_security` in `global_defs`.
 
 ---
 
@@ -272,60 +380,73 @@ Keepalived runs health check scripts as a dedicated `keepalived_script` system u
 
 ### Cache metrics pipeline
 
-```mermaid
-flowchart LR
-    LOG["/var/log/nginx/detailed-access.log\n$upstream_cache_status field"]
-    AWK["cache-counter.sh\nawk — runs every 30s via cron"]
-    PROM_FILE["/var/lib/node_exporter/cache.prom\nnginx_cache_requests_total{status=...}"]
-    NE["node_exporter\n--collector.textfile.directory"]
-    PROM[Prometheus]
-    GRAF[Grafana]
-
-    LOG --> AWK --> PROM_FILE --> NE --> PROM --> GRAF
-```
-
-The awk script uses an atomic write pattern — it writes to a `.tmp` file and renames it to `.prom` — so node_exporter never reads a partially-written file.
+The custom `cache-counter.sh` script parses NGINX logs and uses an atomic write pattern (`.tmp` to `.prom` rename) so Prometheus's `node_exporter` never reads a partially-written file.
 
 ### Grafana dashboards
 
 Two dashboards are provisioned automatically via Ansible:
 
-**v1 — Monitoring Dashboard** — the baseline dashboard built manually as part of learning Grafana: active connections, request rate, API error rates, CPU/memory per VM, WebSocket connections.
-
-**v2 — NGINX HA Full Observability** — 28-panel dashboard covering NGINX connection state, per-node failover timeline, dropped connections, API latency percentiles (p50/p95/p99), JWT issue vs verify rate, Node.js event loop lag, heap usage, network throughput, cache hit ratio, HIT/MISS/BYPASS/STALE rates, open file descriptors, and service uptime.
-
----
-
-## Known limitations and production considerations
-
-**Rate limit state is per-node.** In-memory `limit_req_zone` is not shared between nginx1 and nginx2. In this VRRP setup only one node is ever active so this doesn't matter in practice. In an active-active topology a shared Redis store via OpenResty would be required.
-
-**`stub_status` has no per-status-code visibility.** NGINX open-source only exposes aggregate connection counts via `stub_status`. There is no native way to count 4xx/5xx or 429s at the NGINX level without log parsing (mtail) or NGINX Plus. The cache counter demonstrates the log-parsing pattern; the same approach would extend to error rate tracking.
-
-**Self-signed certificates.** Both NGINX nodes generate independent self-signed certs via Ansible. In production, Let's Encrypt with cert-manager, or a shared certificate distributed from a vault, would be used. The current setup means each node presents a different certificate — undetectable with VRRP since only one node serves traffic at a time, but would break in an active-active topology.
-
-**Backend is a single point of failure.** The backend VM runs both services with no redundancy. NGINX's `proxy_next_upstream` and `proxy_cache_use_stale` mitigate transient backend failures but a full backend VM failure means downtime. In production, multiple backend instances behind an internal load balancer (or a second NGINX tier) would be used.
+1. **v1 — Monitoring Dashboard:** Baseline connection/API metrics.
+2. **v2 — NGINX HA Full Observability:** 28-panel dashboard covering NGINX connection state, failover timelines, dropped connections, API latency percentiles (p50/p95/p99), event loop lag, cache hit ratios, and more.
 
 ---
 
-## Project structure
+## Common pitfalls & Known limitations
 
-```
+- **Permission denied (publickey):**
+  - Usually the wrong PEM file for the instance key pair. Fix with a matching AWS key pair + `chmod 400` on the PEM.
+- **Jump host loop:**
+  - Don’t ProxyJump the jump host through itself. Ensure Bastion/Public nginx connects directly.
+- **EC2 vCPU quota exceeded:**
+  - Free tier limits can be strict. Reduce instance count or request a quota increase if deploying outside the free tier bounds.
+- **Dynamic IP drift:**
+  - Always regenerate the AWS inventory (`gen_inv.sh`) after running a new Terraform apply.
+- **Rate limit state is per-node:** - In-memory `limit_req_zone` is not shared between nginx1 and nginx2. In this active-passive setup, it does not matter.
+- **Self-signed certificates:** - Both nodes generate independent self-signed certs via Ansible. In an active-active production environment, Let's Encrypt or a shared certificate vault would be required.
+- **Backend is a single point of failure:** - NGINX's `proxy_next_upstream` handles transient failures, but a full backend VM crash means downtime. Production would scale the backend instances.
+
+---
+
+## Repository structure
+
+```text
 nginx-ha/
+├── deploy.sh
+├── Vagrantfile
 ├── infra/
+│   ├── terraform/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   ├── instances.tf
+│   │   ├── vpc.tf
+│   │   └── outputs.tf
 │   └── ansible/
+│       ├── ansible.cfg
 │       ├── site.yml
 │       ├── inventory.ini
-│       ├── ansible.cfg
+│       ├── inventory_aws_ssh.ini         # generated dynamically
+│       ├── gen_inv.sh
 │       ├── requirements.yml
 │       └── roles/
-│           ├── common/          # node_exporter on all hosts
-│           ├── backend/         # Docker + Compose deployment
-│           ├── nginx/           # NGINX, TLS, config, exporter, cache counter
-│           ├── keepalived/      # VRRP config, health check script
-│           └── monitoring/      # Prometheus, Grafana, dashboards
+│           ├── backend/
+│           ├── common/
+│           ├── nginx/
+│           ├── keepalived/
+│           └── monitoring/
 └── services/
     ├── compose.yml
-    ├── auth/                    # JWT issue/verify — Hono + Bun, port 3000
-    └── products/                # REST CRUD + WebSocket feed — Hono + Bun, port 4000
+    ├── auth/
+    └── products/
 ```
+
+---
+
+## Notes
+
+- If you use AWS keepalived EIP failover, ensure your EC2 IAM role allows:
+  - `ec2:AssociateAddress`
+  - `ec2:DisassociateAddress`
+- If using scripts for failover actions, ensure:
+  - Valid shebang
+  - LF line endings
+  - Executable bit set (`chmod +x`)

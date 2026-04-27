@@ -6,7 +6,7 @@ OUT_FILE="./inventory_aws_ssh.ini"
 
 # Optional override:
 #   SSH_KEY_FILE=/home/you/.ssh/your-key.pem ./gen_inv.sh
-SSH_KEY_FILE="${SSH_KEY_FILE:-/home/kofta/Downloads/kofta.pem}"
+SSH_KEY_FILE="${SSH_KEY_FILE:-/home/kofta/Downloads/kofta-eu1.pem}"
 
 # Requires jq
 if ! command -v jq >/dev/null 2>&1; then
@@ -57,18 +57,12 @@ vrrp_prio_nginx2="$(printf '%s' "${instance_meta}" | jq -r '.nginx2.vrrp_priorit
 # done
 
 cat > "${OUT_FILE}" <<EOF
-[backend_nodes]
+[backend]
 backend ansible_host=${backend_ip} ansible_user=ubuntu
 
-[nginx_public]
+[nginx]
 nginx1 ansible_host=${nginx1_private} ansible_user=ubuntu
-
-[nginx_private]
 nginx2 ansible_host=${nginx2_private} ansible_user=ubuntu
-
-[nginx:children]
-nginx_public
-nginx_private
 
 [keepalived]
 master ansible_host=${nginx1_private} ansible_user=ubuntu vrrp_role=${vrrp_role_nginx1} vrrp_priority=${vrrp_prio_nginx1}
@@ -77,22 +71,13 @@ backup ansible_host=${nginx2_private} ansible_user=ubuntu vrrp_role=${vrrp_role_
 [monitoring_nodes]
 monitoring ansible_host=${monitoring_ip} ansible_user=ubuntu
 
-[private_nodes]
-backend
-nginx2
-monitoring
-master
-backup
-
-[private_nodes:vars]
-# We use ProxyCommand instead of ProxyJump to force the identity file into the jump hop
-ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand="ssh -i ${SSH_KEY_FILE} -W %h:%p -q ubuntu@${jump_ip} -o StrictHostKeyChecking=no"'
-
 [all:vars]
 ansible_ssh_private_key_file=${SSH_KEY_FILE}
 workload_path=../../../services
 env_type=aws
 vip_allocation_id=${eip_alloc_id}
+# We use ProxyCommand instead of ProxyJump to force the identity file into the jump hop
+ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand="ssh -i ${SSH_KEY_FILE} -W %h:%p -q ubuntu@${jump_ip} -o StrictHostKeyChecking=no"'
 EOF
 
 echo "Generated ${OUT_FILE} using bastion jump host ${jump_ip}"

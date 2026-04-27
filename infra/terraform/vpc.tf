@@ -4,7 +4,7 @@ module "main_vpc" {
   name = "main_vpc"
   cidr = "10.0.0.0/16"
 
-  azs = ["us-east-1a"]
+  azs = ["eu-north-1a"]
 
   private_subnets = ["10.0.1.0/24"]
   public_subnets  = ["10.0.101.0/24"]
@@ -22,9 +22,21 @@ module "nginx_sg" {
   vpc_id      = module.main_vpc.vpc_id
 
   ingress_cidr_blocks = ["0.0.0.0/0"]
-  ingress_rules       = ["http-80-tcp", "https-443-tcp", "ssh-tcp"]
+  ingress_rules       = ["http-80-tcp", "https-443-tcp"]
   # AWS adds this by default but Terraform removes it
   egress_rules = ["all-all"]
+}
+
+module "bastion_sg" {
+  source = "terraform-aws-modules/security-group/aws"
+
+  name        = "bastion-sg"
+  description = "Security Group for bastion SSH access"
+  vpc_id      = module.main_vpc.vpc_id
+
+  ingress_cidr_blocks = ["0.0.0.0/0"]
+  ingress_rules       = ["ssh-tcp"]
+  egress_rules        = ["all-all"]
 }
 
 module "internal_sg" {

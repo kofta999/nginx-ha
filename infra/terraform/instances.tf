@@ -28,13 +28,13 @@ locals {
       vrrp_priority = 100
       public        = true
     }
-    # "monitoring" = {
-    #   type          = "t3.micro"
-    #   role          = "monitoring"
-    #   vrrp_role     = ""
-    #   vrrp_priority = 0
-    #   public        = false
-    # }
+    "monitoring" = {
+      type          = "t3.micro"
+      role          = "monitoring"
+      vrrp_role     = ""
+      vrrp_priority = 0
+      public        = false
+    }
   }
 }
 
@@ -100,14 +100,17 @@ resource "aws_instance" "infra" {
 
   subnet_id = each.value.public ? module.main_vpc.public_subnets[0] : module.main_vpc.private_subnets[0]
 
-  vpc_security_group_ids = each.value.role == "nginx" || each.value.role == "bastion" ? [
-    module.internal_sg.security_group_id,
-    module.nginx_sg.security_group_id
-  ] : [
-    module.internal_sg.security_group_id
-  ]
+vpc_security_group_ids = each.value.role == "nginx" ? [
+  module.internal_sg.security_group_id,
+  module.nginx_sg.security_group_id
+] : each.value.role == "bastion" ? [
+  module.internal_sg.security_group_id,
+  module.bastion_sg.security_group_id
+] : [
+  module.internal_sg.security_group_id
+]
 
-  associate_public_ip_address = each.value.public
+  associate_public_ip_address = each.value.public && each.value.role == "bastion"
 
   key_name = var.ssh_key_name
 
