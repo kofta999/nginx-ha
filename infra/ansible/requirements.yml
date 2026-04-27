@@ -1,0 +1,9 @@
+---
+roles:
+  - name: prometheus.prometheus
+  - name: grafana.grafana
+
+collections:
+  - name: ansible.posix
+  - name: community.crypto
+  - name: community.docker

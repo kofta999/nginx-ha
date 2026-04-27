@@ -10,6 +10,7 @@ fi
 # --output: discard the body
 # --write-out: extract only the HTTP status code
 # --max-time: don't wait forever
+# Note: -k is used as nginx is exposed only on HTTPS, with a self signed certificate
 HTTP_STATUS=$(curl -k --silent --output /dev/null --write-out "%{http_code}" --max-time 2 https://localhost/health/)
 
 if [ "$HTTP_STATUS" -eq 200 ]; then

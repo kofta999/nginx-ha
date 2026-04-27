@@ -1,5 +1,5 @@
 - name: Install required system packages
-  apt:
+  ansible.builtin.apt:
     name:
       - apt-transport-https
       - ca-certificates
@@ -12,17 +12,17 @@
     update_cache: true
 
 - name: Add Docker GPG apt Key
-  apt_key:
+  ansible.builtin.apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
     state: present
 
 - name: Add Docker Repository
-  apt_repository:
-    repo: deb https://download.docker.com/linux/ubuntu focal stable
+  ansible.builtin.apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu {{ ubuntu_version }} stable
     state: present
 
 - name: Update apt and install docker-ce and docker-compose
-  apt:
+  ansible.builtin.apt:
     name:
       - docker-ce
       - docker-compose

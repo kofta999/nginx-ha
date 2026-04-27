@@ -1,1 +1,2 @@
+ubuntu_version: noble
 workload_path: "{{ playbook_dir }}/../../services"
