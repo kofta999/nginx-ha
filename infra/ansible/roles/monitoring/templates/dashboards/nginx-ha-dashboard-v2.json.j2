@@ -4,7 +4,7 @@
   "metadata": {
     "name": "advc7ht",
     "namespace": "default",
-    "uid": "32863131-0984-4e3a-8dc8-c8dbcd47fa35"
+    "uid": "32863131-0984-4e3a-8dc8-c8dbcd47fa35",
   },
   "spec": {
     "annotations": [
@@ -16,17 +16,17 @@
             "group": "grafana",
             "version": "v0",
             "datasource": {
-              "name": "-- Grafana --"
+              "name": "-- Grafana --",
             },
-            "spec": {}
+            "spec": {},
           },
           "enable": true,
           "hide": true,
           "iconColor": "rgba(0, 211, 255, 1)",
           "name": "Annotations & Alerts",
-          "builtIn": true
-        }
-      }
+          "builtIn": true,
+        },
+      },
     ],
     "cursorSync": "Crosshair",
     "editable": true,
@@ -50,23 +50,23 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "builder",
-                        "expr": "nginx_connections_active{instance=~\"192.168.56.12:9113\"}",
+                        "expr": "nginx_connections_active{instance=~\"{{ hostvars['nginx1'].ansible_host }}:9113\"}",
                         "legendFormat": "nginx1",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "A",
-                    "hidden": false
-                  }
-                }
+                    "hidden": false,
+                  },
+                },
               ],
               "transformations": [],
-              "queryOptions": {}
-            }
+              "queryOptions": {},
+            },
           },
           "vizConfig": {
             "kind": "VizConfig",
@@ -82,11 +82,11 @@
                 "reduceOptions": {
                   "calcs": ["lastNotNull"],
                   "fields": "",
-                  "values": false
+                  "values": false,
                 },
                 "showPercentChange": false,
                 "textMode": "auto",
-                "wideLayout": true
+                "wideLayout": true,
               },
               "fieldConfig": {
                 "defaults": {
@@ -96,27 +96,27 @@
                     "steps": [
                       {
                         "value": 0,
-                        "color": "green"
+                        "color": "green",
                       },
                       {
                         "value": 200,
-                        "color": "yellow"
+                        "color": "yellow",
                       },
                       {
                         "value": 500,
-                        "color": "red"
-                      }
-                    ]
+                        "color": "red",
+                      },
+                    ],
                   },
                   "color": {
-                    "mode": "thresholds"
-                  }
+                    "mode": "thresholds",
+                  },
                 },
-                "overrides": []
-              }
-            }
-          }
-        }
+                "overrides": [],
+              },
+            },
+          },
+        },
       },
       "p10": {
         "kind": "Panel",
@@ -137,23 +137,23 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "(nginx_connections_reading + nginx_connections_writing) * 100 / clamp_min(nginx_connections_active, 1)",
-                        "legendFormat": "{{instance}} pressure %",
-                        "range": true
-                      }
+                        "legendFormat": "{{ '{{' }}instance{{ '}}' }} pressure %",
+                        "range": true,
+                      },
                     },
                     "refId": "A",
-                    "hidden": false
-                  }
-                }
+                    "hidden": false,
+                  },
+                },
               ],
               "transformations": [],
-              "queryOptions": {}
-            }
+              "queryOptions": {},
+            },
           },
           "vizConfig": {
             "kind": "VizConfig",
@@ -163,19 +163,19 @@
               "options": {
                 "annotations": {
                   "clustering": -1,
-                  "multiLane": false
+                  "multiLane": false,
                 },
                 "legend": {
                   "calcs": ["mean", "max"],
                   "displayMode": "list",
                   "placement": "bottom",
-                  "showLegend": true
+                  "showLegend": true,
                 },
                 "tooltip": {
                   "hideZeros": false,
                   "mode": "multi",
-                  "sort": "desc"
-                }
+                  "sort": "desc",
+                },
               },
               "fieldConfig": {
                 "defaults": {
@@ -187,20 +187,20 @@
                     "steps": [
                       {
                         "value": 0,
-                        "color": "green"
+                        "color": "green",
                       },
                       {
                         "value": 60,
-                        "color": "yellow"
+                        "color": "yellow",
                       },
                       {
                         "value": 85,
-                        "color": "red"
-                      }
-                    ]
+                        "color": "red",
+                      },
+                    ],
                   },
                   "color": {
-                    "mode": "palette-classic"
+                    "mode": "palette-classic",
                   },
                   "custom": {
                     "axisBorderShow": false,
@@ -216,32 +216,32 @@
                     "hideFrom": {
                       "legend": false,
                       "tooltip": false,
-                      "viz": false
+                      "viz": false,
                     },
                     "insertNulls": false,
                     "lineInterpolation": "smooth",
                     "lineWidth": 2,
                     "pointSize": 5,
                     "scaleDistribution": {
-                      "type": "linear"
+                      "type": "linear",
                     },
                     "showPoints": "never",
                     "showValues": false,
                     "spanNulls": false,
                     "stacking": {
                       "group": "A",
-                      "mode": "none"
+                      "mode": "none",
                     },
                     "thresholdsStyle": {
-                      "mode": "line"
-                    }
-                  }
+                      "mode": "line",
+                    },
+                  },
                 },
-                "overrides": []
-              }
-            }
-          }
-        }
+                "overrides": [],
+              },
+            },
+          },
+        },
       },
       "p11": {
         "kind": "Panel",
@@ -262,18 +262,18 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "histogram_quantile(0.50, sum(rate(products_http_request_duration_seconds_bucket[$__rate_interval])) by (le))",
                         "legendFormat": "p50",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "A",
-                    "hidden": false
-                  }
+                    "hidden": false,
+                  },
                 },
                 {
                   "kind": "PanelQuery",
@@ -283,18 +283,18 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "histogram_quantile(0.95, sum(rate(products_http_request_duration_seconds_bucket[$__rate_interval])) by (le))",
                         "legendFormat": "p95",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "B",
-                    "hidden": false
-                  }
+                    "hidden": false,
+                  },
                 },
                 {
                   "kind": "PanelQuery",
@@ -304,23 +304,23 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "histogram_quantile(0.99, sum(rate(products_http_request_duration_seconds_bucket[$__rate_interval])) by (le))",
                         "legendFormat": "p99",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "C",
-                    "hidden": false
-                  }
-                }
+                    "hidden": false,
+                  },
+                },
               ],
               "transformations": [],
-              "queryOptions": {}
-            }
+              "queryOptions": {},
+            },
           },
           "vizConfig": {
             "kind": "VizConfig",
@@ -330,19 +330,19 @@
               "options": {
                 "annotations": {
                   "clustering": -1,
-                  "multiLane": false
+                  "multiLane": false,
                 },
                 "legend": {
                   "calcs": ["mean", "max"],
                   "displayMode": "list",
                   "placement": "bottom",
-                  "showLegend": true
+                  "showLegend": true,
                 },
                 "tooltip": {
                   "hideZeros": false,
                   "mode": "multi",
-                  "sort": "desc"
-                }
+                  "sort": "desc",
+                },
               },
               "fieldConfig": {
                 "defaults": {
@@ -352,12 +352,12 @@
                     "steps": [
                       {
                         "value": 0,
-                        "color": "green"
-                      }
-                    ]
+                        "color": "green",
+                      },
+                    ],
                   },
                   "color": {
-                    "mode": "palette-classic"
+                    "mode": "palette-classic",
                   },
                   "custom": {
                     "axisBorderShow": false,
@@ -373,32 +373,32 @@
                     "hideFrom": {
                       "legend": false,
                       "tooltip": false,
-                      "viz": false
+                      "viz": false,
                     },
                     "insertNulls": false,
                     "lineInterpolation": "smooth",
                     "lineWidth": 2,
                     "pointSize": 4,
                     "scaleDistribution": {
-                      "type": "linear"
+                      "type": "linear",
                     },
                     "showPoints": "never",
                     "showValues": false,
                     "spanNulls": false,
                     "stacking": {
                       "group": "A",
-                      "mode": "none"
+                      "mode": "none",
                     },
                     "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  }
+                      "mode": "off",
+                    },
+                  },
                 },
-                "overrides": []
-              }
-            }
-          }
-        }
+                "overrides": [],
+              },
+            },
+          },
+        },
       },
       "p12": {
         "kind": "Panel",
@@ -419,18 +419,18 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "histogram_quantile(0.50, sum(rate(auth_http_request_duration_seconds_bucket[$__rate_interval])) by (le))",
                         "legendFormat": "p50",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "A",
-                    "hidden": false
-                  }
+                    "hidden": false,
+                  },
                 },
                 {
                   "kind": "PanelQuery",
@@ -440,18 +440,18 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "histogram_quantile(0.95, sum(rate(auth_http_request_duration_seconds_bucket[$__rate_interval])) by (le))",
                         "legendFormat": "p95",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "B",
-                    "hidden": false
-                  }
+                    "hidden": false,
+                  },
                 },
                 {
                   "kind": "PanelQuery",
@@ -461,23 +461,23 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "histogram_quantile(0.99, sum(rate(auth_http_request_duration_seconds_bucket[$__rate_interval])) by (le))",
                         "legendFormat": "p99",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "C",
-                    "hidden": false
-                  }
-                }
+                    "hidden": false,
+                  },
+                },
               ],
               "transformations": [],
-              "queryOptions": {}
-            }
+              "queryOptions": {},
+            },
           },
           "vizConfig": {
             "kind": "VizConfig",
@@ -487,19 +487,19 @@
               "options": {
                 "annotations": {
                   "clustering": -1,
-                  "multiLane": false
+                  "multiLane": false,
                 },
                 "legend": {
                   "calcs": ["mean", "max"],
                   "displayMode": "list",
                   "placement": "bottom",
-                  "showLegend": true
+                  "showLegend": true,
                 },
                 "tooltip": {
                   "hideZeros": false,
                   "mode": "multi",
-                  "sort": "desc"
-                }
+                  "sort": "desc",
+                },
               },
               "fieldConfig": {
                 "defaults": {
@@ -509,12 +509,12 @@
                     "steps": [
                       {
                         "value": 0,
-                        "color": "green"
-                      }
-                    ]
+                        "color": "green",
+                      },
+                    ],
                   },
                   "color": {
-                    "mode": "palette-classic"
+                    "mode": "palette-classic",
                   },
                   "custom": {
                     "axisBorderShow": false,
@@ -530,32 +530,32 @@
                     "hideFrom": {
                       "legend": false,
                       "tooltip": false,
-                      "viz": false
+                      "viz": false,
                     },
                     "insertNulls": false,
                     "lineInterpolation": "smooth",
                     "lineWidth": 2,
                     "pointSize": 4,
                     "scaleDistribution": {
-                      "type": "linear"
+                      "type": "linear",
                     },
                     "showPoints": "never",
                     "showValues": false,
                     "spanNulls": false,
                     "stacking": {
                       "group": "A",
-                      "mode": "none"
+                      "mode": "none",
                     },
                     "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  }
+                      "mode": "off",
+                    },
+                  },
                 },
-                "overrides": []
-              }
-            }
-          }
-        }
+                "overrides": [],
+              },
+            },
+          },
+        },
       },
       "p13": {
         "kind": "Panel",
@@ -576,18 +576,18 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "rate(auth_tokens_issued_total[$__rate_interval])",
                         "legendFormat": "issued/s",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "A",
-                    "hidden": false
-                  }
+                    "hidden": false,
+                  },
                 },
                 {
                   "kind": "PanelQuery",
@@ -597,23 +597,23 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "rate(auth_token_verify_total[$__rate_interval])",
                         "legendFormat": "verified/s",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "B",
-                    "hidden": false
-                  }
-                }
+                    "hidden": false,
+                  },
+                },
               ],
               "transformations": [],
-              "queryOptions": {}
-            }
+              "queryOptions": {},
+            },
           },
           "vizConfig": {
             "kind": "VizConfig",
@@ -623,19 +623,19 @@
               "options": {
                 "annotations": {
                   "clustering": -1,
-                  "multiLane": false
+                  "multiLane": false,
                 },
                 "legend": {
                   "calcs": [],
                   "displayMode": "list",
                   "placement": "bottom",
-                  "showLegend": true
+                  "showLegend": true,
                 },
                 "tooltip": {
                   "hideZeros": false,
                   "mode": "multi",
-                  "sort": "desc"
-                }
+                  "sort": "desc",
+                },
               },
               "fieldConfig": {
                 "defaults": {
@@ -645,12 +645,12 @@
                     "steps": [
                       {
                         "value": 0,
-                        "color": "green"
-                      }
-                    ]
+                        "color": "green",
+                      },
+                    ],
                   },
                   "color": {
-                    "mode": "palette-classic"
+                    "mode": "palette-classic",
                   },
                   "custom": {
                     "axisBorderShow": false,
@@ -666,32 +666,32 @@
                     "hideFrom": {
                       "legend": false,
                       "tooltip": false,
-                      "viz": false
+                      "viz": false,
                     },
                     "insertNulls": false,
                     "lineInterpolation": "smooth",
                     "lineWidth": 2,
                     "pointSize": 4,
                     "scaleDistribution": {
-                      "type": "linear"
+                      "type": "linear",
                     },
                     "showPoints": "never",
                     "showValues": false,
                     "spanNulls": false,
                     "stacking": {
                       "group": "A",
-                      "mode": "none"
+                      "mode": "none",
                     },
                     "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  }
+                      "mode": "off",
+                    },
+                  },
                 },
-                "overrides": []
-              }
-            }
-          }
-        }
+                "overrides": [],
+              },
+            },
+          },
+        },
       },
       "p14": {
         "kind": "Panel",
@@ -712,18 +712,18 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "rate(products_ws_connections_total[$__rate_interval])",
                         "legendFormat": "new WS connections/s",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "A",
-                    "hidden": false
-                  }
+                    "hidden": false,
+                  },
                 },
                 {
                   "kind": "PanelQuery",
@@ -733,23 +733,23 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "rate(products_ws_price_updates_total[$__rate_interval])",
                         "legendFormat": "price updates/s",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "B",
-                    "hidden": false
-                  }
-                }
+                    "hidden": false,
+                  },
+                },
               ],
               "transformations": [],
-              "queryOptions": {}
-            }
+              "queryOptions": {},
+            },
           },
           "vizConfig": {
             "kind": "VizConfig",
@@ -759,19 +759,19 @@
               "options": {
                 "annotations": {
                   "clustering": -1,
-                  "multiLane": false
+                  "multiLane": false,
                 },
                 "legend": {
                   "calcs": [],
                   "displayMode": "list",
                   "placement": "bottom",
-                  "showLegend": true
+                  "showLegend": true,
                 },
                 "tooltip": {
                   "hideZeros": false,
                   "mode": "multi",
-                  "sort": "desc"
-                }
+                  "sort": "desc",
+                },
               },
               "fieldConfig": {
                 "defaults": {
@@ -781,12 +781,12 @@
                     "steps": [
                       {
                         "value": 0,
-                        "color": "green"
-                      }
-                    ]
+                        "color": "green",
+                      },
+                    ],
                   },
                   "color": {
-                    "mode": "palette-classic"
+                    "mode": "palette-classic",
                   },
                   "custom": {
                     "axisBorderShow": false,
@@ -802,32 +802,32 @@
                     "hideFrom": {
                       "legend": false,
                       "tooltip": false,
-                      "viz": false
+                      "viz": false,
                     },
                     "insertNulls": false,
                     "lineInterpolation": "smooth",
                     "lineWidth": 2,
                     "pointSize": 4,
                     "scaleDistribution": {
-                      "type": "linear"
+                      "type": "linear",
                     },
                     "showPoints": "never",
                     "showValues": false,
                     "spanNulls": false,
                     "stacking": {
                       "group": "A",
-                      "mode": "none"
+                      "mode": "none",
                     },
                     "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  }
+                      "mode": "off",
+                    },
+                  },
                 },
-                "overrides": []
-              }
-            }
-          }
-        }
+                "overrides": [],
+              },
+            },
+          },
+        },
       },
       "p15": {
         "kind": "Panel",
@@ -848,18 +848,18 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "products_nodejs_eventloop_lag_p50_seconds * 1000",
                         "legendFormat": "p50 ms",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "A",
-                    "hidden": false
-                  }
+                    "hidden": false,
+                  },
                 },
                 {
                   "kind": "PanelQuery",
@@ -869,18 +869,18 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "products_nodejs_eventloop_lag_p90_seconds * 1000",
                         "legendFormat": "p90 ms",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "B",
-                    "hidden": false
-                  }
+                    "hidden": false,
+                  },
                 },
                 {
                   "kind": "PanelQuery",
@@ -890,23 +890,23 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "products_nodejs_eventloop_lag_p99_seconds * 1000",
                         "legendFormat": "p99 ms",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "C",
-                    "hidden": false
-                  }
-                }
+                    "hidden": false,
+                  },
+                },
               ],
               "transformations": [],
-              "queryOptions": {}
-            }
+              "queryOptions": {},
+            },
           },
           "vizConfig": {
             "kind": "VizConfig",
@@ -916,19 +916,19 @@
               "options": {
                 "annotations": {
                   "clustering": -1,
-                  "multiLane": false
+                  "multiLane": false,
                 },
                 "legend": {
                   "calcs": [],
                   "displayMode": "list",
                   "placement": "bottom",
-                  "showLegend": true
+                  "showLegend": true,
                 },
                 "tooltip": {
                   "hideZeros": false,
                   "mode": "multi",
-                  "sort": "desc"
-                }
+                  "sort": "desc",
+                },
               },
               "fieldConfig": {
                 "defaults": {
@@ -938,12 +938,12 @@
                     "steps": [
                       {
                         "value": 0,
-                        "color": "green"
-                      }
-                    ]
+                        "color": "green",
+                      },
+                    ],
                   },
                   "color": {
-                    "mode": "palette-classic"
+                    "mode": "palette-classic",
                   },
                   "custom": {
                     "axisBorderShow": false,
@@ -959,32 +959,32 @@
                     "hideFrom": {
                       "legend": false,
                       "tooltip": false,
-                      "viz": false
+                      "viz": false,
                     },
                     "insertNulls": false,
                     "lineInterpolation": "smooth",
                     "lineWidth": 2,
                     "pointSize": 4,
                     "scaleDistribution": {
-                      "type": "linear"
+                      "type": "linear",
                     },
                     "showPoints": "never",
                     "showValues": false,
                     "spanNulls": false,
                     "stacking": {
                       "group": "A",
-                      "mode": "none"
+                      "mode": "none",
                     },
                     "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  }
+                      "mode": "off",
+                    },
+                  },
                 },
-                "overrides": []
-              }
-            }
-          }
-        }
+                "overrides": [],
+              },
+            },
+          },
+        },
       },
       "p16": {
         "kind": "Panel",
@@ -1005,18 +1005,18 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "nodejs_eventloop_lag_p50_seconds * 1000",
                         "legendFormat": "p50 ms",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "A",
-                    "hidden": false
-                  }
+                    "hidden": false,
+                  },
                 },
                 {
                   "kind": "PanelQuery",
@@ -1026,18 +1026,18 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "nodejs_eventloop_lag_p90_seconds * 1000",
                         "legendFormat": "p90 ms",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "B",
-                    "hidden": false
-                  }
+                    "hidden": false,
+                  },
                 },
                 {
                   "kind": "PanelQuery",
@@ -1047,23 +1047,23 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "nodejs_eventloop_lag_p99_seconds * 1000",
                         "legendFormat": "p99 ms",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "C",
-                    "hidden": false
-                  }
-                }
+                    "hidden": false,
+                  },
+                },
               ],
               "transformations": [],
-              "queryOptions": {}
-            }
+              "queryOptions": {},
+            },
           },
           "vizConfig": {
             "kind": "VizConfig",
@@ -1073,19 +1073,19 @@
               "options": {
                 "annotations": {
                   "clustering": -1,
-                  "multiLane": false
+                  "multiLane": false,
                 },
                 "legend": {
                   "calcs": [],
                   "displayMode": "list",
                   "placement": "bottom",
-                  "showLegend": true
+                  "showLegend": true,
                 },
                 "tooltip": {
                   "hideZeros": false,
                   "mode": "multi",
-                  "sort": "desc"
-                }
+                  "sort": "desc",
+                },
               },
               "fieldConfig": {
                 "defaults": {
@@ -1095,12 +1095,12 @@
                     "steps": [
                       {
                         "value": 0,
-                        "color": "green"
-                      }
-                    ]
+                        "color": "green",
+                      },
+                    ],
                   },
                   "color": {
-                    "mode": "palette-classic"
+                    "mode": "palette-classic",
                   },
                   "custom": {
                     "axisBorderShow": false,
@@ -1116,32 +1116,32 @@
                     "hideFrom": {
                       "legend": false,
                       "tooltip": false,
-                      "viz": false
+                      "viz": false,
                     },
                     "insertNulls": false,
                     "lineInterpolation": "smooth",
                     "lineWidth": 2,
                     "pointSize": 4,
                     "scaleDistribution": {
-                      "type": "linear"
+                      "type": "linear",
                     },
                     "showPoints": "never",
                     "showValues": false,
                     "spanNulls": false,
                     "stacking": {
                       "group": "A",
-                      "mode": "none"
+                      "mode": "none",
                     },
                     "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  }
+                      "mode": "off",
+                    },
+                  },
                 },
-                "overrides": []
-              }
-            }
-          }
-        }
+                "overrides": [],
+              },
+            },
+          },
+        },
       },
       "p17": {
         "kind": "Panel",
@@ -1162,23 +1162,23 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[2m])) * 100)",
-                        "legendFormat": "{{instance}}",
-                        "range": true
-                      }
+                        "legendFormat": "{{ '{{' }}instance{{ '}}' }}",
+                        "range": true,
+                      },
                     },
                     "refId": "A",
-                    "hidden": false
-                  }
-                }
+                    "hidden": false,
+                  },
+                },
               ],
               "transformations": [],
-              "queryOptions": {}
-            }
+              "queryOptions": {},
+            },
           },
           "vizConfig": {
             "kind": "VizConfig",
@@ -1191,7 +1191,7 @@
                   "calcs": [],
                   "displayMode": "list",
                   "placement": "bottom",
-                  "showLegend": false
+                  "showLegend": false,
                 },
                 "maxVizHeight": 300,
                 "minVizHeight": 16,
@@ -1201,11 +1201,11 @@
                 "reduceOptions": {
                   "calcs": ["lastNotNull"],
                   "fields": "",
-                  "values": false
+                  "values": false,
                 },
                 "showUnfilled": true,
                 "sizing": "auto",
-                "valueMode": "color"
+                "valueMode": "color",
               },
               "fieldConfig": {
                 "defaults": {
@@ -1217,27 +1217,27 @@
                     "steps": [
                       {
                         "value": 0,
-                        "color": "green"
+                        "color": "green",
                       },
                       {
                         "value": 70,
-                        "color": "yellow"
+                        "color": "yellow",
                       },
                       {
                         "value": 90,
-                        "color": "red"
-                      }
-                    ]
+                        "color": "red",
+                      },
+                    ],
                   },
                   "color": {
-                    "mode": "thresholds"
-                  }
+                    "mode": "thresholds",
+                  },
                 },
-                "overrides": []
-              }
-            }
-          }
-        }
+                "overrides": [],
+              },
+            },
+          },
+        },
       },
       "p18": {
         "kind": "Panel",
@@ -1258,23 +1258,23 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) * 100 / node_memory_MemTotal_bytes",
-                        "legendFormat": "{{instance}}",
-                        "range": true
-                      }
+                        "legendFormat": "{{ '{{' }}instance{{ '}}' }}",
+                        "range": true,
+                      },
                     },
                     "refId": "A",
-                    "hidden": false
-                  }
-                }
+                    "hidden": false,
+                  },
+                },
               ],
               "transformations": [],
-              "queryOptions": {}
-            }
+              "queryOptions": {},
+            },
           },
           "vizConfig": {
             "kind": "VizConfig",
@@ -1287,7 +1287,7 @@
                   "calcs": [],
                   "displayMode": "list",
                   "placement": "bottom",
-                  "showLegend": false
+                  "showLegend": false,
                 },
                 "maxVizHeight": 300,
                 "minVizHeight": 16,
@@ -1297,11 +1297,11 @@
                 "reduceOptions": {
                   "calcs": ["lastNotNull"],
                   "fields": "",
-                  "values": false
+                  "values": false,
                 },
                 "showUnfilled": true,
                 "sizing": "auto",
-                "valueMode": "color"
+                "valueMode": "color",
               },
               "fieldConfig": {
                 "defaults": {
@@ -1313,27 +1313,27 @@
                     "steps": [
                       {
                         "value": 0,
-                        "color": "green"
+                        "color": "green",
                       },
                       {
                         "value": 70,
-                        "color": "yellow"
+                        "color": "yellow",
                       },
                       {
                         "value": 90,
-                        "color": "red"
-                      }
-                    ]
+                        "color": "red",
+                      },
+                    ],
                   },
                   "color": {
-                    "mode": "thresholds"
-                  }
+                    "mode": "thresholds",
+                  },
                 },
-                "overrides": []
-              }
-            }
-          }
-        }
+                "overrides": [],
+              },
+            },
+          },
+        },
       },
       "p19": {
         "kind": "Panel",
@@ -1354,18 +1354,18 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "builder",
-                        "expr": "rate(node_network_receive_bytes_total{instance=~\"192.168.56.12:9100|192.168.56.13:9100\", device!=\"lo\"}[$__rate_interval])",
-                        "legendFormat": "{{instance}} rx",
-                        "range": true
-                      }
+                        "expr": "rate(node_network_receive_bytes_total{instance=~\"{{ hostvars['nginx1'].ansible_host }}:9100|{{ hostvars['nginx2'].ansible_host }}:9100\", device!=\"lo\"}[$__rate_interval])",
+                        "legendFormat": "{{ '{{' }}instance{{ '}}' }} rx",
+                        "range": true,
+                      },
                     },
                     "refId": "A",
-                    "hidden": false
-                  }
+                    "hidden": false,
+                  },
                 },
                 {
                   "kind": "PanelQuery",
@@ -1375,23 +1375,23 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "builder",
-                        "expr": "rate(node_network_transmit_bytes_total{instance=~\"192.168.56.12:9100|192.168.56.13:9100\", device!=\"lo\"}[$__rate_interval])",
-                        "legendFormat": "{{instance}} tx",
-                        "range": true
-                      }
+                        "expr": "rate(node_network_transmit_bytes_total{instance=~\"{{ hostvars['nginx1'].ansible_host }}:9100|{{ hostvars['nginx2'].ansible_host }}:9100\", device!=\"lo\"}[$__rate_interval])",
+                        "legendFormat": "{{ '{{' }}instance{{ '}}' }} tx",
+                        "range": true,
+                      },
                     },
                     "refId": "B",
-                    "hidden": false
-                  }
-                }
+                    "hidden": false,
+                  },
+                },
               ],
               "transformations": [],
-              "queryOptions": {}
-            }
+              "queryOptions": {},
+            },
           },
           "vizConfig": {
             "kind": "VizConfig",
@@ -1401,19 +1401,19 @@
               "options": {
                 "annotations": {
                   "clustering": -1,
-                  "multiLane": false
+                  "multiLane": false,
                 },
                 "legend": {
                   "calcs": [],
                   "displayMode": "list",
                   "placement": "bottom",
-                  "showLegend": true
+                  "showLegend": true,
                 },
                 "tooltip": {
                   "hideZeros": false,
                   "mode": "multi",
-                  "sort": "desc"
-                }
+                  "sort": "desc",
+                },
               },
               "fieldConfig": {
                 "defaults": {
@@ -1423,12 +1423,12 @@
                     "steps": [
                       {
                         "value": 0,
-                        "color": "green"
-                      }
-                    ]
+                        "color": "green",
+                      },
+                    ],
                   },
                   "color": {
-                    "mode": "palette-classic"
+                    "mode": "palette-classic",
                   },
                   "custom": {
                     "axisBorderShow": false,
@@ -1444,32 +1444,32 @@
                     "hideFrom": {
                       "legend": false,
                       "tooltip": false,
-                      "viz": false
+                      "viz": false,
                     },
                     "insertNulls": false,
                     "lineInterpolation": "smooth",
                     "lineWidth": 2,
                     "pointSize": 4,
                     "scaleDistribution": {
-                      "type": "linear"
+                      "type": "linear",
                     },
                     "showPoints": "never",
                     "showValues": false,
                     "spanNulls": false,
                     "stacking": {
                       "group": "A",
-                      "mode": "none"
+                      "mode": "none",
                     },
                     "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  }
+                      "mode": "off",
+                    },
+                  },
                 },
-                "overrides": []
-              }
-            }
-          }
-        }
+                "overrides": [],
+              },
+            },
+          },
+        },
       },
       "p2": {
         "kind": "Panel",
@@ -1490,23 +1490,23 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "builder",
-                        "expr": "nginx_connections_active{instance=~\"192.168.56.13:9113\"}",
+                        "expr": "nginx_connections_active{instance=~\"{{ hostvars['nginx2'].ansible_host }}:9113\"}",
                         "legendFormat": "nginx2",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "A",
-                    "hidden": false
-                  }
-                }
+                    "hidden": false,
+                  },
+                },
               ],
               "transformations": [],
-              "queryOptions": {}
-            }
+              "queryOptions": {},
+            },
           },
           "vizConfig": {
             "kind": "VizConfig",
@@ -1522,11 +1522,11 @@
                 "reduceOptions": {
                   "calcs": ["lastNotNull"],
                   "fields": "",
-                  "values": false
+                  "values": false,
                 },
                 "showPercentChange": false,
                 "textMode": "auto",
-                "wideLayout": true
+                "wideLayout": true,
               },
               "fieldConfig": {
                 "defaults": {
@@ -1536,27 +1536,27 @@
                     "steps": [
                       {
                         "value": 0,
-                        "color": "green"
+                        "color": "green",
                       },
                       {
                         "value": 200,
-                        "color": "yellow"
+                        "color": "yellow",
                       },
                       {
                         "value": 500,
-                        "color": "red"
-                      }
-                    ]
+                        "color": "red",
+                      },
+                    ],
                   },
                   "color": {
-                    "mode": "thresholds"
-                  }
+                    "mode": "thresholds",
+                  },
                 },
-                "overrides": []
-              }
-            }
-          }
-        }
+                "overrides": [],
+              },
+            },
+          },
+        },
       },
       "p20": {
         "kind": "Panel",
@@ -1577,18 +1577,18 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "products_nodejs_heap_size_used_bytes",
                         "legendFormat": "products heap",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "A",
-                    "hidden": false
-                  }
+                    "hidden": false,
+                  },
                 },
                 {
                   "kind": "PanelQuery",
@@ -1598,23 +1598,23 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "nodejs_heap_size_used_bytes",
                         "legendFormat": "auth heap",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "B",
-                    "hidden": false
-                  }
-                }
+                    "hidden": false,
+                  },
+                },
               ],
               "transformations": [],
-              "queryOptions": {}
-            }
+              "queryOptions": {},
+            },
           },
           "vizConfig": {
             "kind": "VizConfig",
@@ -1624,19 +1624,19 @@
               "options": {
                 "annotations": {
                   "clustering": -1,
-                  "multiLane": false
+                  "multiLane": false,
                 },
                 "legend": {
                   "calcs": [],
                   "displayMode": "list",
                   "placement": "bottom",
-                  "showLegend": true
+                  "showLegend": true,
                 },
                 "tooltip": {
                   "hideZeros": false,
                   "mode": "multi",
-                  "sort": "desc"
-                }
+                  "sort": "desc",
+                },
               },
               "fieldConfig": {
                 "defaults": {
@@ -1646,12 +1646,12 @@
                     "steps": [
                       {
                         "value": 0,
-                        "color": "green"
-                      }
-                    ]
+                        "color": "green",
+                      },
+                    ],
                   },
                   "color": {
-                    "mode": "palette-classic"
+                    "mode": "palette-classic",
                   },
                   "custom": {
                     "axisBorderShow": false,
@@ -1667,32 +1667,32 @@
                     "hideFrom": {
                       "legend": false,
                       "tooltip": false,
-                      "viz": false
+                      "viz": false,
                     },
                     "insertNulls": false,
                     "lineInterpolation": "smooth",
                     "lineWidth": 2,
                     "pointSize": 4,
                     "scaleDistribution": {
-                      "type": "linear"
+                      "type": "linear",
                     },
                     "showPoints": "never",
                     "showValues": false,
                     "spanNulls": false,
                     "stacking": {
                       "group": "A",
-                      "mode": "none"
+                      "mode": "none",
                     },
                     "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  }
+                      "mode": "off",
+                    },
+                  },
                 },
-                "overrides": []
-              }
-            }
-          }
-        }
+                "overrides": [],
+              },
+            },
+          },
+        },
       },
       "p21": {
         "kind": "Panel",
@@ -1713,23 +1713,23 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "time() - products_process_start_time_seconds",
                         "legendFormat": "uptime",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "A",
-                    "hidden": false
-                  }
-                }
+                    "hidden": false,
+                  },
+                },
               ],
               "transformations": [],
-              "queryOptions": {}
-            }
+              "queryOptions": {},
+            },
           },
           "vizConfig": {
             "kind": "VizConfig",
@@ -1745,11 +1745,11 @@
                 "reduceOptions": {
                   "calcs": ["lastNotNull"],
                   "fields": "",
-                  "values": false
+                  "values": false,
                 },
                 "showPercentChange": false,
                 "textMode": "auto",
-                "wideLayout": true
+                "wideLayout": true,
               },
               "fieldConfig": {
                 "defaults": {
@@ -1759,27 +1759,27 @@
                     "steps": [
                       {
                         "value": 0,
-                        "color": "red"
+                        "color": "red",
                       },
                       {
                         "value": 60,
-                        "color": "yellow"
+                        "color": "yellow",
                       },
                       {
                         "value": 300,
-                        "color": "green"
-                      }
-                    ]
+                        "color": "green",
+                      },
+                    ],
                   },
                   "color": {
-                    "mode": "thresholds"
-                  }
+                    "mode": "thresholds",
+                  },
                 },
-                "overrides": []
-              }
-            }
-          }
-        }
+                "overrides": [],
+              },
+            },
+          },
+        },
       },
       "p22": {
         "kind": "Panel",
@@ -1800,23 +1800,23 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "time() - process_start_time_seconds{job=\"auth_service\"}",
                         "legendFormat": "uptime",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "A",
-                    "hidden": false
-                  }
-                }
+                    "hidden": false,
+                  },
+                },
               ],
               "transformations": [],
-              "queryOptions": {}
-            }
+              "queryOptions": {},
+            },
           },
           "vizConfig": {
             "kind": "VizConfig",
@@ -1832,11 +1832,11 @@
                 "reduceOptions": {
                   "calcs": ["lastNotNull"],
                   "fields": "",
-                  "values": false
+                  "values": false,
                 },
                 "showPercentChange": false,
                 "textMode": "auto",
-                "wideLayout": true
+                "wideLayout": true,
               },
               "fieldConfig": {
                 "defaults": {
@@ -1846,27 +1846,27 @@
                     "steps": [
                       {
                         "value": 0,
-                        "color": "red"
+                        "color": "red",
                       },
                       {
                         "value": 60,
-                        "color": "yellow"
+                        "color": "yellow",
                       },
                       {
                         "value": 300,
-                        "color": "green"
-                      }
-                    ]
+                        "color": "green",
+                      },
+                    ],
                   },
                   "color": {
-                    "mode": "thresholds"
-                  }
+                    "mode": "thresholds",
+                  },
                 },
-                "overrides": []
-              }
-            }
-          }
-        }
+                "overrides": [],
+              },
+            },
+          },
+        },
       },
       "p23": {
         "kind": "Panel",
@@ -1887,18 +1887,18 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "products_process_open_fds",
                         "legendFormat": "products fds",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "A",
-                    "hidden": false
-                  }
+                    "hidden": false,
+                  },
                 },
                 {
                   "kind": "PanelQuery",
@@ -1908,23 +1908,23 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "process_open_fds{job=\"auth_service\"}",
                         "legendFormat": "auth fds",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "B",
-                    "hidden": false
-                  }
-                }
+                    "hidden": false,
+                  },
+                },
               ],
               "transformations": [],
-              "queryOptions": {}
-            }
+              "queryOptions": {},
+            },
           },
           "vizConfig": {
             "kind": "VizConfig",
@@ -1934,19 +1934,19 @@
               "options": {
                 "annotations": {
                   "clustering": -1,
-                  "multiLane": false
+                  "multiLane": false,
                 },
                 "legend": {
                   "calcs": [],
                   "displayMode": "list",
                   "placement": "bottom",
-                  "showLegend": true
+                  "showLegend": true,
                 },
                 "tooltip": {
                   "hideZeros": false,
                   "mode": "multi",
-                  "sort": "desc"
-                }
+                  "sort": "desc",
+                },
               },
               "fieldConfig": {
                 "defaults": {
@@ -1956,12 +1956,12 @@
                     "steps": [
                       {
                         "value": 0,
-                        "color": "green"
-                      }
-                    ]
+                        "color": "green",
+                      },
+                    ],
                   },
                   "color": {
-                    "mode": "palette-classic"
+                    "mode": "palette-classic",
                   },
                   "custom": {
                     "axisBorderShow": false,
@@ -1977,32 +1977,32 @@
                     "hideFrom": {
                       "legend": false,
                       "tooltip": false,
-                      "viz": false
+                      "viz": false,
                     },
                     "insertNulls": false,
                     "lineInterpolation": "smooth",
                     "lineWidth": 2,
                     "pointSize": 4,
                     "scaleDistribution": {
-                      "type": "linear"
+                      "type": "linear",
                     },
                     "showPoints": "never",
                     "showValues": false,
                     "spanNulls": false,
                     "stacking": {
                       "group": "A",
-                      "mode": "none"
+                      "mode": "none",
                     },
                     "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  }
+                      "mode": "off",
+                    },
+                  },
                 },
-                "overrides": []
-              }
-            }
-          }
-        }
+                "overrides": [],
+              },
+            },
+          },
+        },
       },
       "p24": {
         "kind": "Panel",
@@ -2023,23 +2023,23 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "products_created_total",
                         "legendFormat": "products created",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "A",
-                    "hidden": false
-                  }
-                }
+                    "hidden": false,
+                  },
+                },
               ],
               "transformations": [],
-              "queryOptions": {}
-            }
+              "queryOptions": {},
+            },
           },
           "vizConfig": {
             "kind": "VizConfig",
@@ -2049,19 +2049,19 @@
               "options": {
                 "annotations": {
                   "clustering": -1,
-                  "multiLane": false
+                  "multiLane": false,
                 },
                 "legend": {
                   "calcs": [],
                   "displayMode": "list",
                   "placement": "bottom",
-                  "showLegend": true
+                  "showLegend": true,
                 },
                 "tooltip": {
                   "hideZeros": false,
                   "mode": "multi",
-                  "sort": "desc"
-                }
+                  "sort": "desc",
+                },
               },
               "fieldConfig": {
                 "defaults": {
@@ -2071,12 +2071,12 @@
                     "steps": [
                       {
                         "value": 0,
-                        "color": "green"
-                      }
-                    ]
+                        "color": "green",
+                      },
+                    ],
                   },
                   "color": {
-                    "mode": "palette-classic"
+                    "mode": "palette-classic",
                   },
                   "custom": {
                     "axisBorderShow": false,
@@ -2092,32 +2092,32 @@
                     "hideFrom": {
                       "legend": false,
                       "tooltip": false,
-                      "viz": false
+                      "viz": false,
                     },
                     "insertNulls": false,
                     "lineInterpolation": "smooth",
                     "lineWidth": 2,
                     "pointSize": 4,
                     "scaleDistribution": {
-                      "type": "linear"
+                      "type": "linear",
                     },
                     "showPoints": "never",
                     "showValues": false,
                     "spanNulls": false,
                     "stacking": {
                       "group": "A",
-                      "mode": "none"
+                      "mode": "none",
                     },
                     "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  }
+                      "mode": "off",
+                    },
+                  },
                 },
-                "overrides": []
-              }
-            }
-          }
-        }
+                "overrides": [],
+              },
+            },
+          },
+        },
       },
       "p25": {
         "kind": "Panel",
@@ -2142,17 +2142,17 @@
                         "editorMode": "code",
                         "expr": "rate(nginx_cache_requests_total{status=\"hit\"}[$__rate_interval]) * 100\n/ clamp_min(rate(nginx_cache_requests_total[$__rate_interval]), 1)",
                         "legendFormat": "hit ratio %",
-                        "range": true
+                        "range": true,
                       },
-                      "version": "v0"
+                      "version": "v0",
                     },
-                    "refId": "A"
-                  }
-                }
+                    "refId": "A",
+                  },
+                },
               ],
               "queryOptions": {},
-              "transformations": []
-            }
+              "transformations": [],
+            },
           },
           "vizConfig": {
             "group": "stat",
@@ -2167,11 +2167,11 @@
                     "steps": [
                       { "color": "red", "value": 0 },
                       { "color": "yellow", "value": 50 },
-                      { "color": "green", "value": 80 }
-                    ]
-                  }
+                      { "color": "green", "value": 80 },
+                    ],
+                  },
                 },
-                "overrides": []
+                "overrides": [],
               },
               "options": {
                 "colorMode": "background",
@@ -2181,16 +2181,16 @@
                 "reduceOptions": {
                   "calcs": ["lastNotNull"],
                   "fields": "",
-                  "values": false
+                  "values": false,
                 },
                 "showPercentChange": false,
                 "textMode": "auto",
-                "wideLayout": true
-              }
+                "wideLayout": true,
+              },
             },
-            "version": "13.0.1"
-          }
-        }
+            "version": "13.0.1",
+          },
+        },
       },
       "p26": {
         "kind": "Panel",
@@ -2215,17 +2215,17 @@
                         "editorMode": "code",
                         "expr": "rate(nginx_cache_requests_total{status=\"hit\"}[$__rate_interval]) * 100\n/ clamp_min(rate(nginx_cache_requests_total[$__rate_interval]), 1)",
                         "legendFormat": "hit ratio %",
-                        "range": true
+                        "range": true,
                       },
-                      "version": "v0"
+                      "version": "v0",
                     },
-                    "refId": "A"
-                  }
-                }
+                    "refId": "A",
+                  },
+                },
               ],
               "queryOptions": {},
-              "transformations": []
-            }
+              "transformations": [],
+            },
           },
           "vizConfig": {
             "group": "timeseries",
@@ -2243,28 +2243,28 @@
                     "lineInterpolation": "smooth",
                     "lineWidth": 2,
                     "showPoints": "never",
-                    "thresholdsStyle": { "mode": "off" }
+                    "thresholdsStyle": { "mode": "off" },
                   },
                   "thresholds": {
                     "mode": "absolute",
-                    "steps": [{ "color": "green", "value": 0 }]
-                  }
+                    "steps": [{ "color": "green", "value": 0 }],
+                  },
                 },
-                "overrides": []
+                "overrides": [],
               },
               "options": {
                 "legend": {
                   "calcs": ["mean", "last"],
                   "displayMode": "list",
                   "placement": "bottom",
-                  "showLegend": true
+                  "showLegend": true,
                 },
-                "tooltip": { "mode": "multi", "sort": "desc" }
-              }
+                "tooltip": { "mode": "multi", "sort": "desc" },
+              },
             },
-            "version": "13.0.1"
-          }
-        }
+            "version": "13.0.1",
+          },
+        },
       },
       "p27": {
         "kind": "Panel",
@@ -2289,12 +2289,12 @@
                         "editorMode": "code",
                         "expr": "rate(nginx_cache_requests_total{status=\"hit\"}[$__rate_interval])",
                         "legendFormat": "HIT/s",
-                        "range": true
+                        "range": true,
                       },
-                      "version": "v0"
+                      "version": "v0",
                     },
-                    "refId": "A"
-                  }
+                    "refId": "A",
+                  },
                 },
                 {
                   "kind": "PanelQuery",
@@ -2308,12 +2308,12 @@
                         "editorMode": "code",
                         "expr": "rate(nginx_cache_requests_total{status=\"miss\"}[$__rate_interval])",
                         "legendFormat": "MISS/s",
-                        "range": true
+                        "range": true,
                       },
-                      "version": "v0"
+                      "version": "v0",
                     },
-                    "refId": "B"
-                  }
+                    "refId": "B",
+                  },
                 },
                 {
                   "kind": "PanelQuery",
@@ -2327,12 +2327,12 @@
                         "editorMode": "code",
                         "expr": "rate(nginx_cache_requests_total{status=\"bypass\"}[$__rate_interval])",
                         "legendFormat": "BYPASS/s",
-                        "range": true
+                        "range": true,
                       },
-                      "version": "v0"
+                      "version": "v0",
                     },
-                    "refId": "C"
-                  }
+                    "refId": "C",
+                  },
                 },
                 {
                   "kind": "PanelQuery",
@@ -2346,17 +2346,17 @@
                         "editorMode": "code",
                         "expr": "rate(nginx_cache_requests_total{status=\"stale\"}[$__rate_interval])",
                         "legendFormat": "STALE/s",
-                        "range": true
+                        "range": true,
                       },
-                      "version": "v0"
+                      "version": "v0",
                     },
-                    "refId": "D"
-                  }
-                }
+                    "refId": "D",
+                  },
+                },
               ],
               "queryOptions": {},
-              "transformations": []
-            }
+              "transformations": [],
+            },
           },
           "vizConfig": {
             "group": "timeseries",
@@ -2372,28 +2372,28 @@
                     "lineInterpolation": "smooth",
                     "lineWidth": 2,
                     "showPoints": "never",
-                    "thresholdsStyle": { "mode": "off" }
+                    "thresholdsStyle": { "mode": "off" },
                   },
                   "thresholds": {
                     "mode": "absolute",
-                    "steps": [{ "color": "green", "value": 0 }]
-                  }
+                    "steps": [{ "color": "green", "value": 0 }],
+                  },
                 },
-                "overrides": []
+                "overrides": [],
               },
               "options": {
                 "legend": {
                   "calcs": ["mean", "max"],
                   "displayMode": "list",
                   "placement": "bottom",
-                  "showLegend": true
+                  "showLegend": true,
                 },
-                "tooltip": { "mode": "multi", "sort": "desc" }
-              }
+                "tooltip": { "mode": "multi", "sort": "desc" },
+              },
             },
-            "version": "13.0.1"
-          }
-        }
+            "version": "13.0.1",
+          },
+        },
       },
       "p28": {
         "kind": "Panel",
@@ -2418,17 +2418,17 @@
                         "editorMode": "code",
                         "expr": "nginx_cache_requests_total{status=\"stale\"}",
                         "legendFormat": "stale served",
-                        "range": true
+                        "range": true,
                       },
-                      "version": "v0"
+                      "version": "v0",
                     },
-                    "refId": "A"
-                  }
-                }
+                    "refId": "A",
+                  },
+                },
               ],
               "queryOptions": {},
-              "transformations": []
-            }
+              "transformations": [],
+            },
           },
           "vizConfig": {
             "group": "stat",
@@ -2443,11 +2443,11 @@
                     "steps": [
                       { "color": "green", "value": 0 },
                       { "color": "yellow", "value": 1 },
-                      { "color": "red", "value": 100 }
-                    ]
-                  }
+                      { "color": "red", "value": 100 },
+                    ],
+                  },
                 },
-                "overrides": []
+                "overrides": [],
               },
               "options": {
                 "colorMode": "background",
@@ -2457,16 +2457,16 @@
                 "reduceOptions": {
                   "calcs": ["lastNotNull"],
                   "fields": "",
-                  "values": false
+                  "values": false,
                 },
                 "showPercentChange": false,
                 "textMode": "auto",
-                "wideLayout": true
-              }
+                "wideLayout": true,
+              },
             },
-            "version": "13.0.1"
-          }
-        }
+            "version": "13.0.1",
+          },
+        },
       },
       "p3": {
         "kind": "Panel",
@@ -2487,23 +2487,23 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "sum(nginx_connections_waiting)",
                         "legendFormat": "waiting",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "A",
-                    "hidden": false
-                  }
-                }
+                    "hidden": false,
+                  },
+                },
               ],
               "transformations": [],
-              "queryOptions": {}
-            }
+              "queryOptions": {},
+            },
           },
           "vizConfig": {
             "kind": "VizConfig",
@@ -2519,11 +2519,11 @@
                 "reduceOptions": {
                   "calcs": ["lastNotNull"],
                   "fields": "",
-                  "values": false
+                  "values": false,
                 },
                 "showPercentChange": false,
                 "textMode": "auto",
-                "wideLayout": true
+                "wideLayout": true,
               },
               "fieldConfig": {
                 "defaults": {
@@ -2533,27 +2533,27 @@
                     "steps": [
                       {
                         "value": 0,
-                        "color": "green"
+                        "color": "green",
                       },
                       {
                         "value": 300,
-                        "color": "yellow"
+                        "color": "yellow",
                       },
                       {
                         "value": 800,
-                        "color": "red"
-                      }
-                    ]
+                        "color": "red",
+                      },
+                    ],
                   },
                   "color": {
-                    "mode": "thresholds"
-                  }
+                    "mode": "thresholds",
+                  },
                 },
-                "overrides": []
-              }
-            }
-          }
-        }
+                "overrides": [],
+              },
+            },
+          },
+        },
       },
       "p4": {
         "kind": "Panel",
@@ -2574,23 +2574,23 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "sum(nginx_connections_reading) + sum(nginx_connections_writing)",
                         "legendFormat": "active",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "A",
-                    "hidden": false
-                  }
-                }
+                    "hidden": false,
+                  },
+                },
               ],
               "transformations": [],
-              "queryOptions": {}
-            }
+              "queryOptions": {},
+            },
           },
           "vizConfig": {
             "kind": "VizConfig",
@@ -2606,11 +2606,11 @@
                 "reduceOptions": {
                   "calcs": ["lastNotNull"],
                   "fields": "",
-                  "values": false
+                  "values": false,
                 },
                 "showPercentChange": false,
                 "textMode": "auto",
-                "wideLayout": true
+                "wideLayout": true,
               },
               "fieldConfig": {
                 "defaults": {
@@ -2620,27 +2620,27 @@
                     "steps": [
                       {
                         "value": 0,
-                        "color": "green"
+                        "color": "green",
                       },
                       {
                         "value": 100,
-                        "color": "yellow"
+                        "color": "yellow",
                       },
                       {
                         "value": 300,
-                        "color": "red"
-                      }
-                    ]
+                        "color": "red",
+                      },
+                    ],
                   },
                   "color": {
-                    "mode": "thresholds"
-                  }
+                    "mode": "thresholds",
+                  },
                 },
-                "overrides": []
-              }
-            }
-          }
-        }
+                "overrides": [],
+              },
+            },
+          },
+        },
       },
       "p5": {
         "kind": "Panel",
@@ -2661,18 +2661,18 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "builder",
-                        "expr": "nginx_connections_active{instance=~\"192.168.56.12:9113\"}",
+                        "expr": "nginx_connections_active{instance=~\"{{ hostvars['nginx1'].ansible_host }}:9113\"}",
                         "legendFormat": "nginx1",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "A",
-                    "hidden": false
-                  }
+                    "hidden": false,
+                  },
                 },
                 {
                   "kind": "PanelQuery",
@@ -2682,23 +2682,23 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "builder",
-                        "expr": "nginx_connections_active{instance=~\"192.168.56.13:9113\"}",
+                        "expr": "nginx_connections_active{instance=~\"{{ hostvars['nginx2'].ansible_host }}:9113\"}",
                         "legendFormat": "nginx2",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "B",
-                    "hidden": false
-                  }
-                }
+                    "hidden": false,
+                  },
+                },
               ],
               "transformations": [],
-              "queryOptions": {}
-            }
+              "queryOptions": {},
+            },
           },
           "vizConfig": {
             "kind": "VizConfig",
@@ -2708,19 +2708,19 @@
               "options": {
                 "annotations": {
                   "clustering": -1,
-                  "multiLane": false
+                  "multiLane": false,
                 },
                 "legend": {
                   "calcs": ["last", "max"],
                   "displayMode": "list",
                   "placement": "bottom",
-                  "showLegend": true
+                  "showLegend": true,
                 },
                 "tooltip": {
                   "hideZeros": false,
                   "mode": "multi",
-                  "sort": "desc"
-                }
+                  "sort": "desc",
+                },
               },
               "fieldConfig": {
                 "defaults": {
@@ -2730,12 +2730,12 @@
                     "steps": [
                       {
                         "value": 0,
-                        "color": "green"
-                      }
-                    ]
+                        "color": "green",
+                      },
+                    ],
                   },
                   "color": {
-                    "mode": "palette-classic"
+                    "mode": "palette-classic",
                   },
                   "custom": {
                     "axisBorderShow": false,
@@ -2751,32 +2751,32 @@
                     "hideFrom": {
                       "legend": false,
                       "tooltip": false,
-                      "viz": false
+                      "viz": false,
                     },
                     "insertNulls": false,
                     "lineInterpolation": "smooth",
                     "lineWidth": 2,
                     "pointSize": 4,
                     "scaleDistribution": {
-                      "type": "linear"
+                      "type": "linear",
                     },
                     "showPoints": "never",
                     "showValues": false,
                     "spanNulls": false,
                     "stacking": {
                       "group": "A",
-                      "mode": "none"
+                      "mode": "none",
                     },
                     "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  }
+                      "mode": "off",
+                    },
+                  },
                 },
-                "overrides": []
-              }
-            }
-          }
-        }
+                "overrides": [],
+              },
+            },
+          },
+        },
       },
       "p6": {
         "kind": "Panel",
@@ -2797,18 +2797,18 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "builder",
-                        "expr": "rate(nginx_http_requests_total{instance=~\"192.168.56.12:9113\"}[$__rate_interval])",
+                        "expr": "rate(nginx_http_requests_total{instance=~\"{{ hostvars['nginx1'].ansible_host }}:9113\"}[$__rate_interval])",
                         "legendFormat": "nginx1",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "A",
-                    "hidden": false
-                  }
+                    "hidden": false,
+                  },
                 },
                 {
                   "kind": "PanelQuery",
@@ -2818,23 +2818,23 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "builder",
-                        "expr": "rate(nginx_http_requests_total{instance=~\"192.168.56.13:9113\"}[$__rate_interval])",
+                        "expr": "rate(nginx_http_requests_total{instance=~\"{{ hostvars['nginx2'].ansible_host }}:9113\"}[$__rate_interval])",
                         "legendFormat": "nginx2",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "B",
-                    "hidden": false
-                  }
-                }
+                    "hidden": false,
+                  },
+                },
               ],
               "transformations": [],
-              "queryOptions": {}
-            }
+              "queryOptions": {},
+            },
           },
           "vizConfig": {
             "kind": "VizConfig",
@@ -2844,19 +2844,19 @@
               "options": {
                 "annotations": {
                   "clustering": -1,
-                  "multiLane": false
+                  "multiLane": false,
                 },
                 "legend": {
                   "calcs": ["mean", "max"],
                   "displayMode": "list",
                   "placement": "bottom",
-                  "showLegend": true
+                  "showLegend": true,
                 },
                 "tooltip": {
                   "hideZeros": false,
                   "mode": "multi",
-                  "sort": "desc"
-                }
+                  "sort": "desc",
+                },
               },
               "fieldConfig": {
                 "defaults": {
@@ -2866,12 +2866,12 @@
                     "steps": [
                       {
                         "value": 0,
-                        "color": "green"
-                      }
-                    ]
+                        "color": "green",
+                      },
+                    ],
                   },
                   "color": {
-                    "mode": "palette-classic"
+                    "mode": "palette-classic",
                   },
                   "custom": {
                     "axisBorderShow": false,
@@ -2887,32 +2887,32 @@
                     "hideFrom": {
                       "legend": false,
                       "tooltip": false,
-                      "viz": false
+                      "viz": false,
                     },
                     "insertNulls": false,
                     "lineInterpolation": "smooth",
                     "lineWidth": 2,
                     "pointSize": 4,
                     "scaleDistribution": {
-                      "type": "linear"
+                      "type": "linear",
                     },
                     "showPoints": "never",
                     "showValues": false,
                     "spanNulls": false,
                     "stacking": {
                       "group": "A",
-                      "mode": "none"
+                      "mode": "none",
                     },
                     "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  }
+                      "mode": "off",
+                    },
+                  },
                 },
-                "overrides": []
-              }
-            }
-          }
-        }
+                "overrides": [],
+              },
+            },
+          },
+        },
       },
       "p7": {
         "kind": "Panel",
@@ -2933,18 +2933,18 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "rate(nginx_connections_accepted[$__rate_interval])",
                         "legendFormat": "accepted",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "A",
-                    "hidden": false
-                  }
+                    "hidden": false,
+                  },
                 },
                 {
                   "kind": "PanelQuery",
@@ -2954,23 +2954,23 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "rate(nginx_connections_handled[$__rate_interval])",
                         "legendFormat": "handled",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "B",
-                    "hidden": false
-                  }
-                }
+                    "hidden": false,
+                  },
+                },
               ],
               "transformations": [],
-              "queryOptions": {}
-            }
+              "queryOptions": {},
+            },
           },
           "vizConfig": {
             "kind": "VizConfig",
@@ -2980,19 +2980,19 @@
               "options": {
                 "annotations": {
                   "clustering": -1,
-                  "multiLane": false
+                  "multiLane": false,
                 },
                 "legend": {
                   "calcs": [],
                   "displayMode": "list",
                   "placement": "bottom",
-                  "showLegend": true
+                  "showLegend": true,
                 },
                 "tooltip": {
                   "hideZeros": false,
                   "mode": "multi",
-                  "sort": "desc"
-                }
+                  "sort": "desc",
+                },
               },
               "fieldConfig": {
                 "defaults": {
@@ -3002,12 +3002,12 @@
                     "steps": [
                       {
                         "value": 0,
-                        "color": "green"
-                      }
-                    ]
+                        "color": "green",
+                      },
+                    ],
                   },
                   "color": {
-                    "mode": "palette-classic"
+                    "mode": "palette-classic",
                   },
                   "custom": {
                     "axisBorderShow": false,
@@ -3023,32 +3023,32 @@
                     "hideFrom": {
                       "legend": false,
                       "tooltip": false,
-                      "viz": false
+                      "viz": false,
                     },
                     "insertNulls": false,
                     "lineInterpolation": "smooth",
                     "lineWidth": 2,
                     "pointSize": 4,
                     "scaleDistribution": {
-                      "type": "linear"
+                      "type": "linear",
                     },
                     "showPoints": "never",
                     "showValues": false,
                     "spanNulls": false,
                     "stacking": {
                       "group": "A",
-                      "mode": "none"
+                      "mode": "none",
                     },
                     "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  }
+                      "mode": "off",
+                    },
+                  },
                 },
-                "overrides": []
-              }
-            }
-          }
-        }
+                "overrides": [],
+              },
+            },
+          },
+        },
       },
       "p8": {
         "kind": "Panel",
@@ -3069,23 +3069,23 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "rate(nginx_connections_accepted[$__rate_interval]) - rate(nginx_connections_handled[$__rate_interval])",
                         "legendFormat": "dropped/s",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "A",
-                    "hidden": false
-                  }
-                }
+                    "hidden": false,
+                  },
+                },
               ],
               "transformations": [],
-              "queryOptions": {}
-            }
+              "queryOptions": {},
+            },
           },
           "vizConfig": {
             "kind": "VizConfig",
@@ -3095,19 +3095,19 @@
               "options": {
                 "annotations": {
                   "clustering": -1,
-                  "multiLane": false
+                  "multiLane": false,
                 },
                 "legend": {
                   "calcs": [],
                   "displayMode": "list",
                   "placement": "bottom",
-                  "showLegend": true
+                  "showLegend": true,
                 },
                 "tooltip": {
                   "hideZeros": false,
                   "mode": "multi",
-                  "sort": "desc"
-                }
+                  "sort": "desc",
+                },
               },
               "fieldConfig": {
                 "defaults": {
@@ -3117,12 +3117,12 @@
                     "steps": [
                       {
                         "value": 0,
-                        "color": "green"
-                      }
-                    ]
+                        "color": "green",
+                      },
+                    ],
                   },
                   "color": {
-                    "mode": "palette-classic"
+                    "mode": "palette-classic",
                   },
                   "custom": {
                     "axisBorderShow": false,
@@ -3138,32 +3138,32 @@
                     "hideFrom": {
                       "legend": false,
                       "tooltip": false,
-                      "viz": false
+                      "viz": false,
                     },
                     "insertNulls": false,
                     "lineInterpolation": "smooth",
                     "lineWidth": 2,
                     "pointSize": 4,
                     "scaleDistribution": {
-                      "type": "linear"
+                      "type": "linear",
                     },
                     "showPoints": "never",
                     "showValues": false,
                     "spanNulls": false,
                     "stacking": {
                       "group": "A",
-                      "mode": "none"
+                      "mode": "none",
                     },
                     "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  }
+                      "mode": "off",
+                    },
+                  },
                 },
-                "overrides": []
-              }
-            }
-          }
-        }
+                "overrides": [],
+              },
+            },
+          },
+        },
       },
       "p9": {
         "kind": "Panel",
@@ -3184,18 +3184,18 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "sum(rate(products_http_requests_total{status=~\"4..|5..\"}[$__rate_interval])) * 100\n/ sum(rate(products_http_requests_total[$__rate_interval]))",
                         "legendFormat": "products 4xx+5xx %",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "A",
-                    "hidden": false
-                  }
+                    "hidden": false,
+                  },
                 },
                 {
                   "kind": "PanelQuery",
@@ -3205,18 +3205,18 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "sum(rate(auth_http_requests_total{status_code=~\"4..|5..\"}[$__rate_interval])) * 100\n/ sum(rate(auth_http_requests_total[$__rate_interval]))",
                         "legendFormat": "auth 4xx+5xx %",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "B",
-                    "hidden": false
-                  }
+                    "hidden": false,
+                  },
                 },
                 {
                   "kind": "PanelQuery",
@@ -3226,18 +3226,18 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "sum(rate(products_http_requests_total{status=~\"5..\"}[$__rate_interval])) * 100\n/ sum(rate(products_http_requests_total[$__rate_interval]))",
                         "legendFormat": "products 5xx only %",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "C",
-                    "hidden": false
-                  }
+                    "hidden": false,
+                  },
                 },
                 {
                   "kind": "PanelQuery",
@@ -3247,23 +3247,23 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "Prometheus"
+                        "name": "Prometheus",
                       },
                       "spec": {
                         "editorMode": "code",
                         "expr": "sum(rate(auth_http_requests_total{status_code=~\"5..\"}[$__rate_interval])) * 100\n/ sum(rate(auth_http_requests_total[$__rate_interval]))",
                         "legendFormat": "auth 5xx only %",
-                        "range": true
-                      }
+                        "range": true,
+                      },
                     },
                     "refId": "D",
-                    "hidden": false
-                  }
-                }
+                    "hidden": false,
+                  },
+                },
               ],
               "transformations": [],
-              "queryOptions": {}
-            }
+              "queryOptions": {},
+            },
           },
           "vizConfig": {
             "kind": "VizConfig",
@@ -3273,19 +3273,19 @@
               "options": {
                 "annotations": {
                   "clustering": -1,
-                  "multiLane": false
+                  "multiLane": false,
                 },
                 "legend": {
                   "calcs": [],
                   "displayMode": "list",
                   "placement": "bottom",
-                  "showLegend": true
+                  "showLegend": true,
                 },
                 "tooltip": {
                   "hideZeros": false,
                   "mode": "multi",
-                  "sort": "desc"
-                }
+                  "sort": "desc",
+                },
               },
               "fieldConfig": {
                 "defaults": {
@@ -3295,12 +3295,12 @@
                     "steps": [
                       {
                         "value": 0,
-                        "color": "green"
-                      }
-                    ]
+                        "color": "green",
+                      },
+                    ],
                   },
                   "color": {
-                    "mode": "palette-classic"
+                    "mode": "palette-classic",
                   },
                   "custom": {
                     "axisBorderShow": false,
@@ -3316,33 +3316,33 @@
                     "hideFrom": {
                       "legend": false,
                       "tooltip": false,
-                      "viz": false
+                      "viz": false,
                     },
                     "insertNulls": false,
                     "lineInterpolation": "smooth",
                     "lineWidth": 2,
                     "pointSize": 4,
                     "scaleDistribution": {
-                      "type": "linear"
+                      "type": "linear",
                     },
                     "showPoints": "never",
                     "showValues": false,
                     "spanNulls": false,
                     "stacking": {
                       "group": "A",
-                      "mode": "none"
+                      "mode": "none",
                     },
                     "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  }
+                      "mode": "off",
+                    },
+                  },
                 },
-                "overrides": []
-              }
-            }
-          }
-        }
-      }
+                "overrides": [],
+              },
+            },
+          },
+        },
+      },
     },
     "layout": {
       "kind": "GridLayout",
@@ -3357,9 +3357,9 @@
               "height": 5,
               "element": {
                 "kind": "ElementReference",
-                "name": "p1"
-              }
-            }
+                "name": "p1",
+              },
+            },
           },
           {
             "kind": "GridLayoutItem",
@@ -3370,9 +3370,9 @@
               "height": 5,
               "element": {
                 "kind": "ElementReference",
-                "name": "p2"
-              }
-            }
+                "name": "p2",
+              },
+            },
           },
           {
             "kind": "GridLayoutItem",
@@ -3383,9 +3383,9 @@
               "height": 5,
               "element": {
                 "kind": "ElementReference",
-                "name": "p3"
-              }
-            }
+                "name": "p3",
+              },
+            },
           },
           {
             "kind": "GridLayoutItem",
@@ -3396,9 +3396,9 @@
               "height": 5,
               "element": {
                 "kind": "ElementReference",
-                "name": "p4"
-              }
-            }
+                "name": "p4",
+              },
+            },
           },
           {
             "kind": "GridLayoutItem",
@@ -3409,9 +3409,9 @@
               "height": 9,
               "element": {
                 "kind": "ElementReference",
-                "name": "p5"
-              }
-            }
+                "name": "p5",
+              },
+            },
           },
           {
             "kind": "GridLayoutItem",
@@ -3422,9 +3422,9 @@
               "height": 9,
               "element": {
                 "kind": "ElementReference",
-                "name": "p6"
-              }
-            }
+                "name": "p6",
+              },
+            },
           },
           {
             "kind": "GridLayoutItem",
@@ -3435,9 +3435,9 @@
               "height": 8,
               "element": {
                 "kind": "ElementReference",
-                "name": "p7"
-              }
-            }
+                "name": "p7",
+              },
+            },
           },
           {
             "kind": "GridLayoutItem",
@@ -3448,9 +3448,9 @@
               "height": 8,
               "element": {
                 "kind": "ElementReference",
-                "name": "p8"
-              }
-            }
+                "name": "p8",
+              },
+            },
           },
           {
             "kind": "GridLayoutItem",
@@ -3461,9 +3461,9 @@
               "height": 9,
               "element": {
                 "kind": "ElementReference",
-                "name": "p9"
-              }
-            }
+                "name": "p9",
+              },
+            },
           },
           {
             "kind": "GridLayoutItem",
@@ -3474,9 +3474,9 @@
               "height": 9,
               "element": {
                 "kind": "ElementReference",
-                "name": "p10"
-              }
-            }
+                "name": "p10",
+              },
+            },
           },
           {
             "kind": "GridLayoutItem",
@@ -3487,9 +3487,9 @@
               "height": 9,
               "element": {
                 "kind": "ElementReference",
-                "name": "p11"
-              }
-            }
+                "name": "p11",
+              },
+            },
           },
           {
             "kind": "GridLayoutItem",
@@ -3500,9 +3500,9 @@
               "height": 9,
               "element": {
                 "kind": "ElementReference",
-                "name": "p12"
-              }
-            }
+                "name": "p12",
+              },
+            },
           },
           {
             "kind": "GridLayoutItem",
@@ -3513,9 +3513,9 @@
               "height": 8,
               "element": {
                 "kind": "ElementReference",
-                "name": "p13"
-              }
-            }
+                "name": "p13",
+              },
+            },
           },
           {
             "kind": "GridLayoutItem",
@@ -3526,9 +3526,9 @@
               "height": 8,
               "element": {
                 "kind": "ElementReference",
-                "name": "p14"
-              }
-            }
+                "name": "p14",
+              },
+            },
           },
           {
             "kind": "GridLayoutItem",
@@ -3539,9 +3539,9 @@
               "height": 8,
               "element": {
                 "kind": "ElementReference",
-                "name": "p15"
-              }
-            }
+                "name": "p15",
+              },
+            },
           },
           {
             "kind": "GridLayoutItem",
@@ -3552,9 +3552,9 @@
               "height": 8,
               "element": {
                 "kind": "ElementReference",
-                "name": "p16"
-              }
-            }
+                "name": "p16",
+              },
+            },
           },
           {
             "kind": "GridLayoutItem",
@@ -3565,9 +3565,9 @@
               "height": 7,
               "element": {
                 "kind": "ElementReference",
-                "name": "p17"
-              }
-            }
+                "name": "p17",
+              },
+            },
           },
           {
             "kind": "GridLayoutItem",
@@ -3578,9 +3578,9 @@
               "height": 7,
               "element": {
                 "kind": "ElementReference",
-                "name": "p18"
-              }
-            }
+                "name": "p18",
+              },
+            },
           },
           {
             "kind": "GridLayoutItem",
@@ -3591,9 +3591,9 @@
               "height": 8,
               "element": {
                 "kind": "ElementReference",
-                "name": "p19"
-              }
-            }
+                "name": "p19",
+              },
+            },
           },
           {
             "kind": "GridLayoutItem",
@@ -3604,9 +3604,9 @@
               "height": 8,
               "element": {
                 "kind": "ElementReference",
-                "name": "p20"
-              }
-            }
+                "name": "p20",
+              },
+            },
           },
           {
             "kind": "GridLayoutItem",
@@ -3617,9 +3617,9 @@
               "height": 5,
               "element": {
                 "kind": "ElementReference",
-                "name": "p21"
-              }
-            }
+                "name": "p21",
+              },
+            },
           },
           {
             "kind": "GridLayoutItem",
@@ -3630,9 +3630,9 @@
               "height": 5,
               "element": {
                 "kind": "ElementReference",
-                "name": "p22"
-              }
-            }
+                "name": "p22",
+              },
+            },
           },
           {
             "kind": "GridLayoutItem",
@@ -3643,9 +3643,9 @@
               "height": 7,
               "element": {
                 "kind": "ElementReference",
-                "name": "p23"
-              }
-            }
+                "name": "p23",
+              },
+            },
           },
           {
             "kind": "GridLayoutItem",
@@ -3656,9 +3656,9 @@
               "height": 7,
               "element": {
                 "kind": "ElementReference",
-                "name": "p24"
-              }
-            }
+                "name": "p24",
+              },
+            },
           },
           {
             "kind": "GridLayoutItem",
@@ -3669,9 +3669,9 @@
               "height": 8,
               "element": {
                 "kind": "ElementReference",
-                "name": "p25"
-              }
-            }
+                "name": "p25",
+              },
+            },
           },
           {
             "kind": "GridLayoutItem",
@@ -3682,9 +3682,9 @@
               "height": 8,
               "element": {
                 "kind": "ElementReference",
-                "name": "p26"
-              }
-            }
+                "name": "p26",
+              },
+            },
           },
           {
             "kind": "GridLayoutItem",
@@ -3695,9 +3695,9 @@
               "height": 8,
               "element": {
                 "kind": "ElementReference",
-                "name": "p27"
-              }
-            }
+                "name": "p27",
+              },
+            },
           },
           {
             "kind": "GridLayoutItem",
@@ -3708,12 +3708,12 @@
               "height": 8,
               "element": {
                 "kind": "ElementReference",
-                "name": "p28"
-              }
-            }
-          }
-        ]
-      }
+                "name": "p28",
+              },
+            },
+          },
+        ],
+      },
     },
     "links": [],
     "liveNow": false,
@@ -3732,10 +3732,10 @@
         "5m",
         "15m",
         "30m",
-        "1h"
+        "1h",
       ],
       "hideTimepicker": false,
-      "fiscalYearStartMonth": 0
+      "fiscalYearStartMonth": 0,
     },
     "title": "NGINX HA — Full Observability v2",
     "variables": [],
@@ -3746,9 +3746,9 @@
           "maxColumnCount": 4,
           "columnWidthMode": "standard",
           "rowHeightMode": "standard",
-          "items": []
-        }
-      }
-    }
-  }
+          "items": [],
+        },
+      },
+    },
+  },
 }

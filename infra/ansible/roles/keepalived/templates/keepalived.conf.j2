@@ -19,11 +19,27 @@ vrrp_instance VI_1 {
     priority {{ vrrp_priority }}
     advert_int {{ advertise_interval_secs }}
 
+    # Unicast is required for AWS (no multicast) and works perfectly locally too
+    unicast_src_ip {{ ansible_host }}
+    unicast_peer {
+{% for peer in groups['nginx'] %}
+{% if hostvars[peer]['ansible_host'] != ansible_host %}
+        {{ hostvars[peer]['ansible_host'] }}
+{% endif %}
+{% endfor %}
+    }
+
     authentication {
         auth_type PASS
         auth_pass {{ keepalived_auth_pass }}
     }
 
+{% if env_type | default('local') == 'aws' %}
+    # AWS mode: API-driven failover for Elastic IP
+    notify_master "/usr/local/bin/claim_eip.sh"
+{% endif %}
+
+    # MUST be present in BOTH environments so VRRP packets are valid (for some reason ¯\_(ツ)_/¯)
     virtual_ipaddress {
         {{ keepalived_vip }}
     }

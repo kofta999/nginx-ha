@@ -28,6 +28,27 @@
           - targets:
               - "{{ hostvars['backend']['ansible_host'] }}:4000"
 
+- name: Create local temp dashboard directory
+  ansible.builtin.file:
+    path: "{{ playbook_dir }}/.tmp/grafana-dashboards"
+    state: directory
+    mode: "0755"
+  delegate_to: localhost
+  run_once: true
+  become: false
+
+- name: Render dashboard templates locally
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/dashboards/{{ item }}"
+    dest: "{{ playbook_dir }}/.tmp/grafana-dashboards/{{ item | regex_replace('\\.j2$', '') }}"
+    mode: "0644"
+  loop:
+    - nginx-ha-dashboard-v1.json.j2
+    - nginx-ha-dashboard-v2.json.j2
+  delegate_to: localhost
+  run_once: true
+  become: false
+
 - name: Setup Grafana
   ansible.builtin.import_role:
     name: grafana.grafana.grafana
@@ -41,4 +62,4 @@
         url: http://localhost:9090
         access: proxy
         is_default: true
-    grafana_dashboards_dir: "{{ playbook_dir }}/roles/monitoring/files/dashboards"
+    grafana_dashboards_dir: "{{ playbook_dir }}/.tmp/grafana-dashboards"

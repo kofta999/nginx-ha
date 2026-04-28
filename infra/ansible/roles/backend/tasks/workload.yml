@@ -2,6 +2,14 @@
   ansible.posix.synchronize:
     src: "{{ workload_path }}"
     dest: /opt
+    use_ssh_args: true
+    delete: true
+    recursive: true
+    rsync_opts:
+      - "--exclude=node_modules"
+      - "--exclude=.git"
+      - "--exclude=dist"
+      - "--exclude=.DS_Store"
 
 - name: Run workload
   community.docker.docker_compose_v2:
