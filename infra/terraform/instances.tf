@@ -7,13 +7,6 @@ locals {
       vrrp_priority = 0
       public        = false
     }
-    "bastion" = {
-      type          = "t3.micro"
-      role          = "bastion"
-      vrrp_role     = ""
-      vrrp_priority = 0
-      public        = true
-    }
     "nginx1" = {
       type          = "t3.micro"
       role          = "nginx"
@@ -28,12 +21,13 @@ locals {
       vrrp_priority = 100
       public        = true
     }
+    # Note: It's better to use a dedicated bastion host but to save on costs I'll use monitoring node
     "monitoring" = {
       type          = "t3.micro"
       role          = "monitoring"
       vrrp_role     = ""
       vrrp_priority = 0
-      public        = false
+      public        = true
     }
   }
 }
@@ -103,14 +97,14 @@ resource "aws_instance" "infra" {
 vpc_security_group_ids = each.value.role == "nginx" ? [
   module.internal_sg.security_group_id,
   module.nginx_sg.security_group_id
-] : each.value.role == "bastion" ? [
+] : each.value.role == "monitoring" ? [
   module.internal_sg.security_group_id,
-  module.bastion_sg.security_group_id
+  module.monitoring_sg.security_group_id
 ] : [
   module.internal_sg.security_group_id
 ]
 
-  associate_public_ip_address = each.value.public && each.value.role == "bastion"
+  associate_public_ip_address = each.value.public && each.value.role == "monitoring" || each.value.role == "nginx"
 
   key_name = var.ssh_key_name
 

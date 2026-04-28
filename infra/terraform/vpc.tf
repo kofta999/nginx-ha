@@ -27,16 +27,27 @@ module "nginx_sg" {
   egress_rules = ["all-all"]
 }
 
-module "bastion_sg" {
+module "monitoring_sg" {
   source = "terraform-aws-modules/security-group/aws"
 
-  name        = "bastion-sg"
-  description = "Security Group for bastion SSH access"
+  name        = "monitoring-sg"
+  description = "Security Group for monitoring access"
   vpc_id      = module.main_vpc.vpc_id
 
   ingress_cidr_blocks = ["0.0.0.0/0"]
   ingress_rules       = ["ssh-tcp"]
-  egress_rules        = ["all-all"]
+
+  ingress_with_cidr_blocks = [
+    {
+      from_port   = 3000
+      to_port     = 3000
+      protocol    = "tcp"
+      description = "Grafana"
+      cidr_blocks = "0.0.0.0/0"
+    }
+  ]
+
+  egress_rules = ["all-all"]
 }
 
 module "internal_sg" {

@@ -68,8 +68,8 @@
                       "spec": {
                         "editorMode": "builder",
                         "expr": "nginx_connections_active",
-                        "legendFormat": "{{instance}}",
-                        "range": true
+                                                "legendFormat": "{{ '{{' }}instance{{ '}}' }}",
+                                                "range": true
                       }
                     },
                     "refId": "A",
@@ -186,8 +186,8 @@
                       "spec": {
                         "editorMode": "builder",
                         "expr": "rate(nginx_http_requests_total[$__rate_interval])",
-                        "legendFormat": "{{instance}}",
-                        "range": true
+                                                "legendFormat": "{{ '{{' }}instance{{ '}}' }}",
+                                                "range": true
                       }
                     },
                     "refId": "A",
@@ -503,9 +503,9 @@
                       "spec": {
                         "editorMode": "code",
                         "expr": "(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) * 100 / node_memory_MemTotal_bytes",
-                        "instant": false,
-                        "legendFormat": "{{instance}}",
-                        "range": true
+                                                "instant": false,
+                                                "legendFormat": "{{ '{{' }}instance{{ '}}' }}",
+                                                "range": true
                       }
                     },
                     "refId": "A",

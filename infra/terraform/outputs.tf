@@ -4,12 +4,12 @@ output "ssh_user" {
   value       = "ubuntu"
 }
 
-output "bastion_public_ip" {
-  description = "Public IP of bastion host used as SSH jump host"
+output "monitoring_public_ip" {
+  description = "Public IP of monitoring host used as SSH jump host"
   value = one([
     for _, instance in aws_instance.infra :
     instance.public_ip
-    if instance.tags.Role == "bastion"
+    if instance.tags.Role == "monitoring"
   ])
 }
 

@@ -2,31 +2,52 @@
   ansible.builtin.include_vars:
     file: vars/vault.yml
 
-- name: Setup Prometheus
-  ansible.builtin.import_role:
-    name: prometheus.prometheus.prometheus
-  vars:
-    prometheus_global:
-      scrape_interval: 15s
+# - name: Setup Prometheus
+#   ansible.builtin.import_role:
+#     name: prometheus.prometheus.prometheus
+#   vars:
+#     prometheus_global:
+#       scrape_interval: 15s
 
-    prometheus_scrape_configs:
-      - job_name: "node"
-        static_configs:
-          - targets: "{{ groups['all'] | map('extract', hostvars, ['ansible_host']) | map('regex_replace', '$', ':9100') | list }}"
+#     prometheus_scrape_configs:
+#       - job_name: "node"
+#         static_configs:
+#           - targets: "{{ groups['all'] | map('extract', hostvars, ['ansible_host']) | map('regex_replace', '$', ':9100') | list }}"
 
-      - job_name: "nginx"
-        static_configs:
-          - targets: "{{ groups['nginx'] | map('extract', hostvars, ['ansible_host']) | map('regex_replace', '$', ':9113') | list }}"
+#       - job_name: "nginx"
+#         static_configs:
+#           - targets: "{{ groups['nginx'] | map('extract', hostvars, ['ansible_host']) | map('regex_replace', '$', ':9113') | list }}"
 
-      - job_name: "auth_service"
-        static_configs:
-          - targets:
-              - "{{ hostvars['backend']['ansible_host'] }}:3000"
+#       - job_name: "auth_service"
+#         static_configs:
+#           - targets:
+#               - "{{ hostvars['backend']['ansible_host'] }}:3000"
 
-      - job_name: "products_service"
-        static_configs:
-          - targets:
-              - "{{ hostvars['backend']['ansible_host'] }}:4000"
+#       - job_name: "products_service"
+#         static_configs:
+#           - targets:
+#               - "{{ hostvars['backend']['ansible_host'] }}:4000"
+
+- name: Create local temp dashboard directory
+  ansible.builtin.file:
+    path: "{{ playbook_dir }}/.tmp/grafana-dashboards"
+    state: directory
+    mode: "0755"
+  delegate_to: localhost
+  run_once: true
+  become: false
+
+- name: Render dashboard templates locally
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/dashboards/{{ item }}"
+    dest: "{{ playbook_dir }}/.tmp/grafana-dashboards/{{ item | regex_replace('\\.j2$', '') }}"
+    mode: "0644"
+  loop:
+    - nginx-ha-dashboard-v1.json.j2
+    - nginx-ha-dashboard-v2.json.j2
+  delegate_to: localhost
+  run_once: true
+  become: false
 
 - name: Setup Grafana
   ansible.builtin.import_role:
@@ -41,4 +62,4 @@
         url: http://localhost:9090
         access: proxy
         is_default: true
-    grafana_dashboards_dir: "{{ playbook_dir }}/roles/monitoring/files/dashboards"
+    grafana_dashboards_dir: "{{ playbook_dir }}/.tmp/grafana-dashboards"
