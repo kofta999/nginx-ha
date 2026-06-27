@@ -32,8 +32,7 @@ run_aws() {
   echo
   echo "[aws] This will:"
   echo "  1) terraform apply"
-  echo "  2) generate AWS SSH inventory"
-  echo "  3) run ansible-playbook against AWS hosts"
+  echo "  2) run ansible-playbook against AWS hosts"
   echo
 
   read -r -p "AWS EC2 key pair name [kofta]: " SSH_KEY_NAME
@@ -53,23 +52,14 @@ run_aws() {
   echo "[aws] Running terraform init/apply..."
   cd "${TF_DIR}"
   terraform init
-  terraform apply -var="ssh_key_name=${SSH_KEY_NAME}"
-
-  echo
-  echo "[aws] Generating Ansible inventory from terraform outputs..."
-  cd "${ANSIBLE_DIR}"
-  chmod +x ./gen_inv.sh
-  SSH_KEY_FILE="${SSH_KEY_FILE}" ./gen_inv.sh
-
-  echo
-  echo "[aws] Preview generated inventory:"
-  ansible-inventory -i inventory_aws_ssh.ini --graph
+  terraform apply --auto-approve -var="ssh_key_name=${SSH_KEY_NAME}"
 
   echo
   read -r -p "Proceed with ansible-playbook on AWS? [y/N]: " CONFIRM
   CONFIRM="${CONFIRM:-N}"
   if [[ "${CONFIRM}" =~ ^[Yy]$ ]]; then
-    ansible-playbook -i inventory_aws_ssh.ini site.yml
+    # Navigating explicitly ensures Ansible finds hosts.yml and site.yml
+    terraform apply --auto-approve -var="ssh_key_name=${SSH_KEY_NAME}" -invoke=action.ansible_playbook_run.ansible
     echo
     echo "[aws] Done."
   else
@@ -82,8 +72,27 @@ main() {
   echo
   echo "Choose deployment target:"
   echo "  1) local (Vagrant + inventory.ini)"
-  echo "  2) aws   (Terraform + generated inventory_aws_ssh.ini)"
+  echo "  2) aws   (Terraform + Ansible Playbook Action)"
   echo
   echo "Tips:"
   echo " - Local is fastest for iteration/debug."
-  echo " - AWS requires a valid EC2 key pair and matching local
+  echo " - AWS requires a valid EC2 key pair and matching local private key."
+  echo
+
+  read -r -p "Enter choice [1 or 2]: " TARGET_CHOICE
+
+  case "${TARGET_CHOICE}" in
+    1)
+      run_local
+      ;;
+    2)
+      run_aws
+      ;;
+    *)
+      echo "Invalid selection. Exiting."
+      exit 1
+      ;;
+  esac
+}
+
+main
