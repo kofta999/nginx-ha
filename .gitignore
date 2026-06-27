@@ -4,3 +4,4 @@ node_modules
 .terraform
 inventory_aws_ssh.ini
 .tmp
+terraform.tfvars

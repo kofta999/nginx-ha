@@ -1,11 +1,9 @@
 locals {
   nodes = {
     "backend" = {
-      type          = "t3.micro"
-      role          = "backend"
-      vrrp_role     = ""
-      vrrp_priority = 0
-      public        = false
+      type   = "t3.micro"
+      role   = "backend"
+      public = false
     }
     "nginx1" = {
       type          = "t3.micro"
@@ -23,55 +21,43 @@ locals {
     }
     # Note: It's better to use a dedicated bastion host but to save on costs I'll use monitoring node
     "monitoring" = {
-      type          = "t3.micro"
-      role          = "monitoring"
-      vrrp_role     = ""
-      vrrp_priority = 0
-      public        = true
+      type   = "t3.micro"
+      role   = "monitoring"
+      public = true
     }
   }
 }
 
-resource "aws_iam_role" "ec2_role" {
+module "ec2_iam_role" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role"
+  version = "~> 6.0"
+
   name = "ec2-role"
 
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "ec2.amazonaws.com"
-        }
-      }
-    ]
-  })
-}
+  trust_policy_permissions = {
+    AllowEC2ToAssume = {
+      actions = ["sts:AssumeRole"]
+      principals = [{
+        type        = "Service"
+        identifiers = ["ec2.amazonaws.com"]
+      }]
+    }
+  }
 
-resource "aws_iam_role_policy" "ec2_eip_policy" {
-  name = "ec2-eip-association-policy"
-  role = aws_iam_role.ec2_role.id
+  create_inline_policy = true
+  inline_policy_permissions = {
+    "ec2-eip-association-policy" = {
+      sid    = "AllowAssociateDisassociateEip"
+      effect = "Allow"
+      actions = [
+        "ec2:AssociateAddress",
+        "ec2:DisassociateAddress"
+      ]
+      resources = ["*"]
+    }
+  }
 
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Sid    = "AllowAssociateDisassociateEip"
-        Effect = "Allow"
-        Action = [
-          "ec2:AssociateAddress",
-          "ec2:DisassociateAddress"
-        ]
-        Resource = "*"
-      }
-    ]
-  })
-}
-
-resource "aws_iam_instance_profile" "ec2_instance_profile" {
-  name = "ec2-instance-profile"
-  role = aws_iam_role.ec2_role.name
+  create_instance_profile = true
 }
 
 data "aws_ami" "ubuntu" {
@@ -90,19 +76,19 @@ resource "aws_instance" "infra" {
 
   ami                  = data.aws_ami.ubuntu.id
   instance_type        = each.value.type
-  iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile.name
+  iam_instance_profile = module.ec2_iam_role.instance_profile_name
 
   subnet_id = each.value.public ? module.main_vpc.public_subnets[0] : module.main_vpc.private_subnets[0]
 
-vpc_security_group_ids = each.value.role == "nginx" ? [
-  module.internal_sg.security_group_id,
-  module.nginx_sg.security_group_id
-] : each.value.role == "monitoring" ? [
-  module.internal_sg.security_group_id,
-  module.monitoring_sg.security_group_id
-] : [
-  module.internal_sg.security_group_id
-]
+  vpc_security_group_ids = each.value.role == "nginx" ? [
+    module.internal_sg.id,
+    module.nginx_sg.id
+    ] : each.value.role == "monitoring" ? [
+    module.internal_sg.id,
+    module.monitoring_sg.id
+    ] : [
+    module.internal_sg.id
+  ]
 
   associate_public_ip_address = each.value.public && each.value.role == "monitoring" || each.value.role == "nginx"
 
@@ -111,10 +97,11 @@ vpc_security_group_ids = each.value.role == "nginx" ? [
   tags = {
     Name         = each.key
     Role         = each.value.role
-    VrrpRole     = each.value.vrrp_role
-    VrrpPriority = tostring(each.value.vrrp_priority)
+    VrrpRole     = try(each.value.vrrp_role, null)
+    VrrpPriority = try(tostring(each.value.vrrp_priority), null)
   }
 
+  # Enables V1 instance metadata endpoint (no auth required)
   metadata_options {
     http_endpoint = "enabled"
     http_tokens   = "optional"

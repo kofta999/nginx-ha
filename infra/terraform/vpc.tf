@@ -1,5 +1,6 @@
 module "main_vpc" {
-  source = "terraform-aws-modules/vpc/aws"
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "~> 6.0"
 
   name = "main_vpc"
   cidr = "10.0.0.0/16"
@@ -15,16 +16,35 @@ module "main_vpc" {
 }
 
 module "nginx_sg" {
-  source = "terraform-aws-modules/security-group/aws"
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "~> 6.0"
 
   name        = "nginx-sg"
   description = "Security Group for Nginx reverse proxies"
   vpc_id      = module.main_vpc.vpc_id
 
-  ingress_cidr_blocks = ["0.0.0.0/0"]
-  ingress_rules       = ["http-80-tcp", "https-443-tcp"]
+  ingress_rules = {
+    https = {
+      from_port   = 443
+      ip_protocol = "tcp"
+      cidr_ipv4   = "0.0.0.0/0"
+    }
+    http = {
+      from_port   = 80
+      ip_protocol = "tcp"
+      cidr_ipv4   = "0.0.0.0/0"
+    }
+  }
+
+
   # AWS adds this by default but Terraform removes it
-  egress_rules = ["all-all"]
+  egress_rules = {
+    all = {
+      # All
+      ip_protocol = "-1"
+      cidr_ipv4   = "0.0.0.0/0"
+    }
+  }
 }
 
 module "monitoring_sg" {
@@ -34,20 +54,27 @@ module "monitoring_sg" {
   description = "Security Group for monitoring access"
   vpc_id      = module.main_vpc.vpc_id
 
-  ingress_cidr_blocks = ["0.0.0.0/0"]
-  ingress_rules       = ["ssh-tcp"]
-
-  ingress_with_cidr_blocks = [
-    {
-      from_port   = 3000
-      to_port     = 3000
-      protocol    = "tcp"
-      description = "Grafana"
-      cidr_blocks = "0.0.0.0/0"
+  ingress_rules = {
+    ssh = {
+      from_port   = 22
+      ip_protocol = "tcp"
+      cidr_ipv4   = "0.0.0.0/0"
     }
-  ]
 
-  egress_rules = ["all-all"]
+    grafana = {
+      from_port = 3000
+      to_port   = 3000
+      protocol  = "tcp"
+      cidr_ipv4 = "0.0.0.0/0"
+    }
+  }
+
+  egress_rules = {
+    all = {
+      ip_protocol = "-1"
+      cidr_ipv4   = "0.0.0.0/0"
+    }
+  }
 }
 
 module "internal_sg" {
@@ -57,17 +84,28 @@ module "internal_sg" {
   description = "Security Group for internal communication"
   vpc_id      = module.main_vpc.vpc_id
 
-  ingress_cidr_blocks = [module.main_vpc.vpc_cidr_block]
-  ingress_rules       = ["ssh-tcp"]
+  ingress_rules = {
+    ssh = {
+      from_port   = 22
+      ip_protocol = "tcp"
+      cidr_ipv4   = module.main_vpc.vpc_cidr_block
+    }
 
-  egress_rules = ["all-all"]
+    all-from-self = {
+      ip_protocol                  = "-1"
+      referenced_security_group_id = "self"
+      description                  = "All protocols from self"
+    }
+  }
 
-  egress_with_self = [
-    { rule = "all-all" }
-  ]
-  ingress_with_self = [
-    { rule = "all-all" }
-  ]
+  egress_rules = {
+    all-to-self = {
+      ip_protocol                  = "-1"
+      referenced_security_group_id = "self"
+      description                  = "All protocols to self"
+    }
+  }
+
 }
 
 resource "aws_eip" "nginx_vip" {
