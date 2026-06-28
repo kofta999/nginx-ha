@@ -74,7 +74,7 @@ jobs:
           shred -u ssh.pem
 
       - name: Upload TF plan artifact
-        uses: actions/upload-artifact@v8
+        uses: actions/upload-artifact@v7
         with:
           name: terraform-plan
           path: "./infra/terraform/tfplan"
