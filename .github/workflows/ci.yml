@@ -39,6 +39,7 @@ jobs:
         working-directory: ./infra/terraform
         run: terraform validate
 
+      - name: Run trivy on TF code
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: "config"
