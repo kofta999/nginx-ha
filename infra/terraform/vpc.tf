@@ -104,6 +104,12 @@ module "internal_sg" {
       referenced_security_group_id = "self"
       description                  = "All protocols to self"
     }
+
+    internet-out = {
+      ip_protocol = "-1"
+      cidr_ipv4   = "0.0.0.0/0"
+      description = "Allow all outbound traffic to the internet via NAT"
+    }
   }
 
 }
