@@ -61,9 +61,12 @@ jobs:
         env:
           SSH_KEY_NAME: ${{ secrets.SSH_KEY_NAME }}
           SSH_KEY_FILE: ${{ secrets.SSH_KEY_FILE }}
+          VAULT_PASS: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
         run: |
+          echo $VAULT_PASS > .vault_pass
           echo $SSH_KEY_FILE > ssh.pem
           terraform apply -var "ssh_key_name=$SSH_KEY_NAME" -var "ssh_key_file=ssh.pem" -auto-approve tfplan
+          shred -u .vault_pass
           shred -u ssh.pem
 
       - name: Invoke Ansible action
@@ -71,7 +74,10 @@ jobs:
         env:
           SSH_KEY_NAME: ${{ secrets.SSH_KEY_NAME }}
           SSH_KEY_FILE: ${{ secrets.SSH_KEY_FILE }}
+          VAULT_PASS: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
         run: |
+          echo $VAULT_PASS > .vault_pass
           echo $SSH_KEY_FILE > ssh.pem
           terraform apply -invoke=action.ansible_playbook_run.ansible -var "ssh_key_name=$SSH_KEY_NAME" -var "ssh_key_file=ssh.pem" -auto-approve
+          shred -u .vault_pass
           shred -u ssh.pem
