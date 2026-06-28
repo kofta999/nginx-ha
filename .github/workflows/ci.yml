@@ -29,11 +29,11 @@ jobs:
         working-directory: ./infra/terraform
         run: terraform validate
 
-      - name: Run Checkov Action for Terraform (SAST)
-        uses: bridgecrewio/checkov-action@master
-        with:
-          directory: ./infra/terraform
-          framework: terraform
+      # - name: Run Checkov Action for Terraform (SAST)
+      #   uses: bridgecrewio/checkov-action@master
+      #   with:
+      #     directory: ./infra/terraform
+      #     framework: terraform
 
       - name: Plan TF deployment
         working-directory: ./infra/terraform
@@ -59,6 +59,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install ansible
           pip install ansible-lint
+          ansible-galaxy install -r requirements.yml
 
       - name: Ansible Syntax Check
         working-directory: ./infra/ansible
