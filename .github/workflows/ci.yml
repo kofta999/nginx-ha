@@ -58,7 +58,12 @@ jobs:
 
       - name: Ansible Syntax Check
         working-directory: ./infra/ansible
-        run: ansible-playbook site.yml --syntax-check
+        env:
+          VAULT_PASS: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+        run: |
+          echo $VAULT_PASS > .vault_pass
+          ansible-playbook site.yml --syntax-check
+          shred -u .vault_pass
 
       - name: Ansible Lint
         working-directory: ./infra/ansible
