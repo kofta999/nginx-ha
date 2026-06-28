@@ -6,6 +6,10 @@ on:
     branches:
       - master
 
+permissions:
+  id-token: write # Required for requesting the JWT token
+  contents: read # Required for actions/checkout
+
 jobs:
   lint-tf:
     runs-on: ubuntu-latest
