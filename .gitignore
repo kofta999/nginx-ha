@@ -5,3 +5,5 @@ node_modules
 inventory_aws_ssh.ini
 .tmp
 terraform.tfvars
+terraform.tfstate
+terraform.tfstate.backup
