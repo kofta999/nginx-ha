@@ -1,0 +1,71 @@
+name: CI Workflow
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  lint-tf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: "1.15.0"
+
+      - name: Check TF formatting
+        working-directory: ./infra/terraform
+        run: terraform fmt -check
+
+      - name: Validate TF code
+        working-directory: ./infra/terraform
+        run: terraform validate
+
+      - name: Run Checkov Action for Terraform (SAST)
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: ./infra/terraform
+          framework: terraform
+
+      - name: Plan TF deployment
+        working-directory: ./infra/terraform
+        run: terraform plan
+
+  lint-ansible:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup Ansible
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: "1.15.0"
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install Ansible
+        run: |
+          python -m pip install --upgrade pip
+          pip install ansible
+          pip install ansible-lint
+
+      - name: Ansible Syntax Check
+        working-directory: ./infra/ansible
+        run: ansible-playbook site.yml --syntax-check
+
+      - name: Ansible Lint
+        working-directory: ./infra/ansible
+        run: ansible-lint
+
+      - name: Run Checkov Action for Ansible (SAST)
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: ./infra/ansible
+          framework: ansible
