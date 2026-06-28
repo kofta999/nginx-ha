@@ -1,5 +1,6 @@
+---
 # Note: keepalived_auth_pass is encrypted in vault.yml
 keepalived_vip: 192.168.56.15
 keepalived_interface: "{{ 'ens5' if (env_type | default('local')) == 'aws' else 'enp0s8' }}"
-virtual_router_id: 67
-advertise_interval_secs: 3
+keepalived_virtual_router_id: 67
+keepalived_advertise_interval_secs: 3

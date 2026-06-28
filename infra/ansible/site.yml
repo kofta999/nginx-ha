@@ -1,3 +1,4 @@
+---
 - name: Common config
   hosts: all
   become: true

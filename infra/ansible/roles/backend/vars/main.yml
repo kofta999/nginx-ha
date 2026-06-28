@@ -1,2 +1,3 @@
-ubuntu_version: noble
-workload_path: "{{ playbook_dir }}/../../services"
+---
+backend_ubuntu_version: noble
+backend_workload_path: "{{ playbook_dir }}/../../services"

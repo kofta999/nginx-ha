@@ -27,7 +27,7 @@ data "ansible_inventory" "infra_inventory" {
     group {
       name = "backend"
       vars = {
-        workload_path = "../../../services"
+        backend_workload_path = "../../../services"
       }
       host {
         name         = "backend"

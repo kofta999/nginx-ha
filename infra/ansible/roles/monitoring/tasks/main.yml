@@ -1,3 +1,4 @@
+---
 - name: Include vault vars
   ansible.builtin.include_vars:
     file: vars/vault.yml

@@ -1,3 +1,4 @@
+---
 - name: Download nginx-node-exporter
   ansible.builtin.unarchive:
     # TODO: Make it a variable with version

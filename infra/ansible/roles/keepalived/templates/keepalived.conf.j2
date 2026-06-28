@@ -15,9 +15,9 @@ vrrp_script check_nginx {
 vrrp_instance VI_1 {
     state {{ vrrp_role }}
     interface {{ keepalived_interface }}
-    virtual_router_id {{ virtual_router_id }}
+    virtual_router_id {{ keepalived_virtual_router_id }}
     priority {{ vrrp_priority }}
-    advert_int {{ advertise_interval_secs }}
+    advert_int {{ keepalived_advertise_interval_secs }}
 
     # Unicast is required for AWS (no multicast) and works perfectly locally too
     unicast_src_ip {{ ansible_host }}

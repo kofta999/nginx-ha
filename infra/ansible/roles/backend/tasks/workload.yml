@@ -1,6 +1,7 @@
+---
 - name: Copy workload files
   ansible.posix.synchronize:
-    src: "{{ workload_path }}"
+    src: "{{ backend_workload_path }}"
     dest: /opt
     use_ssh_args: true
     delete: true

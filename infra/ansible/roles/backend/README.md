@@ -56,7 +56,7 @@ The role runs two task files in order:
   hosts: backend
   become: true
   vars:
-    workload_path: "{{ playbook_dir }}/../../services"
+    backend_workload_path: "{{ playbook_dir }}/../../services"
   roles:
     - backend
 ```

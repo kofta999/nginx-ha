@@ -1,3 +1,4 @@
+---
 - name: Include vault vars
   ansible.builtin.include_vars:
     file: vars/vault.yml
@@ -29,7 +30,6 @@
     classic: true
     state: present
   when: env_type | default('local') == 'aws'
-
 
 - name: Copy AWS eip claim script
   ansible.builtin.template:

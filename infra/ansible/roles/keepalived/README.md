@@ -28,11 +28,11 @@ These variables are used by `templates/keepalived.conf.j2` and must be available
   Expected values: `MASTER` or `BACKUP`
 - `keepalived_interface`  
   Network interface used for VRRP advertisements (example: `eth1`)
-- `virtual_router_id`  
+- `keepalived_virtual_router_id`  
   Integer VRID shared by nodes in same VRRP instance
 - `vrrp_priority`  
   Higher value wins MASTER election
-- `advertise_interval_secs`  
+- `keepalived_advertise_interval_secs`  
   VRRP advert interval in seconds
 - `keepalived_auth_pass`  
   VRRP auth password

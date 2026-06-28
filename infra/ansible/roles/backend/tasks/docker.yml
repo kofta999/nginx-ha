@@ -1,3 +1,4 @@
+---
 - name: Install required system packages
   ansible.builtin.apt:
     name:
@@ -18,7 +19,7 @@
 
 - name: Add Docker Repository
   ansible.builtin.apt_repository:
-    repo: deb https://download.docker.com/linux/ubuntu {{ ubuntu_version }} stable
+    repo: deb https://download.docker.com/linux/ubuntu {{ backend_ubuntu_version }} stable
     state: present
 
 - name: Update apt and install docker-ce and docker-compose
