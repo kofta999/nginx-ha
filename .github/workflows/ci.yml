@@ -42,7 +42,7 @@ jobs:
       - name: Create dummy tfvars file
         working-directory: "./infra/terraform"
         run: |
-          cat 'EOF' << > trivy.tfvars
+          cat << 'EOF' > trivy.tfvars
           ssh_key_name = "dummy"
           ssh_key_file = "dummy"
           EOF
