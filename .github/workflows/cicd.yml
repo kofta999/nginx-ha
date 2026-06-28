@@ -50,7 +50,8 @@ jobs:
           VAULT_PASS: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
         run: |
           echo $VAULT_PASS > ../ansible/.vault_pass
-          echo $SSH_KEY_FILE > ssh.pem
+          echo "$SSH_KEY_FILE" > ssh.pem
+          chmod 600 ssh.pem
           terraform plan -var "ssh_key_name=$SSH_KEY_NAME" -var "ssh_key_file=ssh.pem" -out=tfplan
           shred -u ../ansible/.vault_pass
           shred -u ssh.pem
@@ -148,7 +149,8 @@ jobs:
           VAULT_PASS: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
         run: |
           echo $VAULT_PASS > ../ansible/.vault_pass
-          echo $SSH_KEY_FILE > ssh.pem
+          echo "$SSH_KEY_FILE" > ssh.pem
+          chmod 600 ssh.pem
           terraform apply -var "ssh_key_name=$SSH_KEY_NAME" -var "ssh_key_file=ssh.pem" -auto-approve tfplan
           shred -u ../ansible/.vault_pass
           shred -u ssh.pem
@@ -161,7 +163,8 @@ jobs:
           VAULT_PASS: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
         run: |
           echo $VAULT_PASS > ../ansible/.vault_pass
-          echo $SSH_KEY_FILE > ssh.pem
+          echo "$SSH_KEY_FILE" > ssh.pem
+          chmod 600 ssh.pem
           terraform apply -invoke=action.ansible_playbook_run.ansible -var "ssh_key_name=$SSH_KEY_NAME" -var "ssh_key_file=ssh.pem" -auto-approve
           shred -u ../ansible/.vault_pass
           shred -u ssh.pem
