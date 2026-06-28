@@ -63,7 +63,7 @@ jobs:
           SSH_KEY_FILE: ${{ secrets.SSH_KEY_FILE }}
           VAULT_PASS: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
         run: |
-          echo $VAULT_PASS > .vault_pass
+          echo $VAULT_PASS > ../ansible/.vault_pass
           echo $SSH_KEY_FILE > ssh.pem
           terraform apply -var "ssh_key_name=$SSH_KEY_NAME" -var "ssh_key_file=ssh.pem" -auto-approve tfplan
           shred -u .vault_pass
