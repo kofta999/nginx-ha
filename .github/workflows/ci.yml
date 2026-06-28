@@ -39,12 +39,21 @@ jobs:
         working-directory: ./infra/terraform
         run: terraform validate
 
+      - name: Create dummy tfvars file
+        working-directory: "./infra/terraform"
+        run: |
+          cat 'EOF' << > trivy.tfvars
+          ssh_key_name = "dummy"
+          ssh_key_file = "dummy"
+          EOF
+
       - name: Run trivy on TF code
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: "config"
           scan-dir: "./infra/terraform"
           format: "sarif"
+          tf-vars: "trivy.tfvars"
           output: "trivy-results.sarif"
           exit-code: "1"
           severity: "HIGH,CRITICAL"
