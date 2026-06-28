@@ -1,4 +1,4 @@
-name: CI Workflow
+name: CI/CD Workflow
 
 on:
   workflow_dispatch:
@@ -42,30 +42,6 @@ jobs:
         working-directory: ./infra/terraform
         run: terraform validate
 
-      # - name: Create dummy tfvars file
-      #   working-directory: "./infra/terraform"
-      #   run: |
-      #     cat << 'EOF' > trivy.tfvars
-      #     ssh_key_name = "dummy"
-      #     ssh_key_file = "dummy"
-      #     EOF
-
-      # - name: Run trivy on TF code
-      #   uses: aquasecurity/trivy-action@master
-      #   with:
-      #     scan-type: "config"
-      #     scan-ref: "./infra/terraform"
-      #     format: "sarif"
-      #     tf-vars: "trivy.tfvars"
-      #     output: "trivy-results.sarif"
-      #     exit-code: "1"
-      #     severity: "HIGH,CRITICAL"
-
-      # - name: Upload Trivy scan results to GitHub Security tab
-      #   uses: github/codeql-action/upload-sarif@v3
-      #   with:
-      #     sarif_file: "trivy-results.sarif"
-
       - name: Plan TF deployment
         working-directory: ./infra/terraform
         env:
@@ -90,11 +66,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-
-      - name: Setup Ansible
-        uses: hashicorp/setup-terraform@v4
-        with:
-          terraform_version: "1.15.0"
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -127,8 +98,70 @@ jobs:
           ansible-lint
           shred -u .vault_pass
 
-      # - name: Run Checkov Action for Ansible (SAST)
-      #   uses: bridgecrewio/checkov-action@master
-      #   with:
-      #     directory: ./infra/ansible
-      #     framework: ansible
+  apply-tf-and-ansible:
+    runs-on: ubuntu-latest
+    needs: [lint-tf, lint-ansible]
+    # Only run deployment on pushes to master or manual dispatches, NOT on pull requests
+    if: github.event_name != 'pull_request'
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Download Plan Artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: terraform-plan
+          path: "./infra/terraform"
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install Ansible
+        working-directory: ./infra/ansible
+        run: |
+          python -m pip install --upgrade pip
+          pip install ansible
+          pip install ansible-lint
+          ansible-galaxy collection install -r requirements.yml
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: "1.15.0"
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-terraform-role
+          aws-region: us-east-1
+
+      - name: Initialize Terraform
+        working-directory: ./infra/terraform
+        run: terraform init
+
+      - name: Apply TF deployment
+        working-directory: ./infra/terraform
+        env:
+          SSH_KEY_NAME: ${{ secrets.SSH_KEY_NAME }}
+          SSH_KEY_FILE: ${{ secrets.SSH_KEY_FILE }}
+          VAULT_PASS: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+        run: |
+          echo $VAULT_PASS > ../ansible/.vault_pass
+          echo $SSH_KEY_FILE > ssh.pem
+          terraform apply -var "ssh_key_name=$SSH_KEY_NAME" -var "ssh_key_file=ssh.pem" -auto-approve tfplan
+          shred -u .vault_pass
+          shred -u ssh.pem
+
+      - name: Invoke Ansible action
+        working-directory: ./infra/terraform
+        env:
+          SSH_KEY_NAME: ${{ secrets.SSH_KEY_NAME }}
+          SSH_KEY_FILE: ${{ secrets.SSH_KEY_FILE }}
+          VAULT_PASS: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+        run: |
+          echo $VAULT_PASS > ../ansible/.vault_pass
+          echo $SSH_KEY_FILE > ssh.pem
+          terraform apply -invoke=action.ansible_playbook_run.ansible -var "ssh_key_name=$SSH_KEY_NAME" -var "ssh_key_file=ssh.pem" -auto-approve
+          shred -u .vault_pass
+          shred -u ssh.pem
