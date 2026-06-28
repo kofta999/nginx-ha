@@ -17,6 +17,10 @@ jobs:
         with:
           terraform_version: "1.15.0"
 
+      - name: Initialize Terraform
+        working-directory: ./infra/terraform
+        run: terraform init
+
       - name: Check TF formatting
         working-directory: ./infra/terraform
         run: terraform fmt -check
